@@ -2,7 +2,7 @@
 
 A locally-running multi-agent system for deep, interdisciplinary research with only 3 dependencies. Give it a research question, it excavates the intellectual history, maps the gaps, proposes approaches, evaluates their feasibility, synthesises a research narrative, and produces a final document. You stay in control through three mandatory review breaks.
 
-A product example is here, without adding my personal modification during the hard breaks, to gauge by yourself the quality: [HERE](/RUN-20260331-152508-D296_blog_post.md)
+A product example is here, without adding my personal modification during the hard breaks, to gauge by yourself the quality of the pipeline: [HERE](/RUN-20260331-152508-D296_blog_post.md)
 
 ---
 
