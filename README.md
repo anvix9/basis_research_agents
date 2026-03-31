@@ -250,12 +250,6 @@ pipeline/
 
 ---
 
-## Technical documentation
-
-Full technical documentation — agent objectives, database schema with all columns, core module descriptions, setup instructions — is in [TECHNICAL.md](./TECHNICAL.md) (and as a Word document in the repository).
-
----
-
 ## Licence
 
 MIT — see [LICENCE](./LICENCE).
