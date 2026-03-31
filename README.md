@@ -4,6 +4,9 @@ A locally-running multi-agent system for deep, interdisciplinary research with o
 
 A product example is here, without adding my personal modification during the hard breaks, to gauge by yourself the quality of the pipeline: [HERE](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md)
 
+IMPORTANT NOTE: This pipeline is not a replacement in scientific rigor as I still take my time to process most of the work and anlyze possible directions
+however, it provides how deep a collaboration could be when done right between ai and scientist.
+
 ---
 
 ## What it does
