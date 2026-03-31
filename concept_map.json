@@ -1,0 +1,628 @@
+{
+  "_description": "Conceptual knowledge map for the research pipeline. Maps surface concepts to disciplinary territories. Maintained manually — add clusters and triggers as your research expands.",
+  "_version": "1.0",
+  "_last_updated": "2026-03-30",
+
+  "concept_clusters": [
+
+    {
+      "cluster_id": "intelligence_cognition",
+      "label": "Intelligence and Cognition",
+      "trigger_concepts": [
+        "intelligence", "cognition", "cognitive", "thinking", "reasoning", "logic",
+        "understanding", "comprehension", "knowledge", "learning", "memory",
+        "attention", "perception", "judgment", "decision", "inference",
+        "problem solving", "mental", "mind", "thought", "brain", "neural",
+        "smart", "clever", "wisdom", "insight", "intuition", "awareness",
+        "metacognition", "executive function", "working memory", "processing"
+      ],
+      "disciplines": [
+        "cognitive_science", "psychology", "neuroscience", "philosophy_of_mind",
+        "AI", "education_science", "linguistics", "behavioral_science"
+      ],
+      "bridge_concepts": [
+        "representation", "computation", "symbol", "embodied cognition",
+        "distributed cognition", "extended mind", "cognitive architecture"
+      ]
+    },
+
+    {
+      "cluster_id": "consciousness_experience",
+      "label": "Consciousness and Subjective Experience",
+      "trigger_concepts": [
+        "consciousness", "conscious", "awareness", "experience", "subjective",
+        "qualia", "phenomenal", "sentience", "self-awareness", "introspection",
+        "inner life", "first-person", "what it is like", "feeling", "sensation",
+        "perception", "wakefulness", "sleep", "dreaming", "altered states",
+        "unconscious", "subconscious", "mindfulness", "presence"
+      ],
+      "disciplines": [
+        "philosophy_of_mind", "neuroscience", "psychology", "cognitive_science",
+        "phenomenology", "contemplative_studies", "psychiatry"
+      ],
+      "bridge_concepts": [
+        "hard problem of consciousness", "neural correlates", "integrated information",
+        "global workspace", "phenomenology", "intentionality", "qualia"
+      ]
+    },
+
+    {
+      "cluster_id": "language_communication",
+      "label": "Language and Communication",
+      "trigger_concepts": [
+        "language", "linguistic", "communication", "meaning", "words", "speech",
+        "discourse", "text", "symbol", "sign", "grammar", "syntax", "semantics",
+        "pragmatics", "dialogue", "conversation", "writing", "reading",
+        "translation", "interpretation", "narrative", "rhetoric", "metaphor",
+        "utterance", "sentence", "vocabulary", "bilingual", "multilingual",
+        "natural language", "formal language", "code", "expression", "message"
+      ],
+      "disciplines": [
+        "linguistics", "philosophy_of_language", "semiotics", "cognitive_linguistics",
+        "NLP", "communication_studies", "literary_theory", "rhetoric", "anthropology"
+      ],
+      "bridge_concepts": [
+        "grounding", "reference", "meaning", "speech act", "language game",
+        "Wittgenstein", "Chomsky", "Saussure", "pragmatics", "context"
+      ]
+    },
+
+    {
+      "cluster_id": "human_nature_society",
+      "label": "Human Nature and Society",
+      "trigger_concepts": [
+        "human", "humanity", "people", "person", "individual", "social", "society",
+        "community", "culture", "civilization", "institution", "norm", "value",
+        "behavior", "practice", "ritual", "custom", "tradition", "everyday life",
+        "lived experience", "identity", "group", "collective", "public", "private",
+        "household", "family", "gender", "race", "class", "generation", "age",
+        "body", "embodiment", "health", "wellbeing", "happiness", "suffering"
+      ],
+      "disciplines": [
+        "sociology", "anthropology", "social_psychology", "cultural_studies",
+        "gender_studies", "demography", "public_health", "philosophy", "history"
+      ],
+      "bridge_concepts": [
+        "agency", "structure", "habitus", "social capital", "norms",
+        "institutions", "intersubjectivity", "lifeworld", "praxis"
+      ]
+    },
+
+    {
+      "cluster_id": "technology_tools",
+      "label": "Technology and Tools",
+      "trigger_concepts": [
+        "technology", "technological", "machine", "tool", "instrument", "device",
+        "system", "algorithm", "automation", "robot", "computer", "software",
+        "hardware", "digital", "electronic", "network", "platform", "interface",
+        "data", "database", "internet", "web", "artificial", "engineered",
+        "design", "invention", "innovation", "artifact", "infrastructure",
+        "media", "telecommunication", "biotechnology", "nanotechnology"
+      ],
+      "disciplines": [
+        "computer_science", "AI", "philosophy_of_technology", "science_technology_studies",
+        "engineering_ethics", "human_computer_interaction", "media_studies",
+        "information_science", "cybernetics"
+      ],
+      "bridge_concepts": [
+        "human-machine interaction", "automation", "delegation", "trust",
+        "sociotechnical systems", "technological determinism", "affordance",
+        "mediation", "black box", "algorithm", "code"
+      ]
+    },
+
+    {
+      "cluster_id": "artificial_intelligence_ml",
+      "label": "Artificial Intelligence and Machine Learning",
+      "trigger_concepts": [
+        "artificial intelligence", "AI", "machine learning", "deep learning",
+        "neural network", "model", "training", "dataset", "prediction",
+        "classification", "generative", "large language model", "LLM",
+        "GPT", "transformer", "reinforcement learning", "supervised",
+        "unsupervised", "optimization", "gradient", "parameter", "weight",
+        "inference", "reasoning", "planning", "agent", "autonomous",
+        "intelligent system", "expert system", "knowledge base", "robot"
+      ],
+      "disciplines": [
+        "AI", "computer_science", "cognitive_science", "philosophy_of_mind",
+        "statistics", "mathematics", "neuroscience", "engineering_ethics"
+      ],
+      "bridge_concepts": [
+        "Turing test", "Chinese room", "symbol grounding", "emergence",
+        "explainability", "alignment", "bias", "fairness", "interpretability"
+      ]
+    },
+
+    {
+      "cluster_id": "ethics_morality",
+      "label": "Ethics and Morality",
+      "trigger_concepts": [
+        "ethics", "ethical", "moral", "morality", "value", "values", "right",
+        "wrong", "good", "bad", "harm", "benefit", "fairness", "justice",
+        "responsibility", "duty", "obligation", "virtue", "character",
+        "autonomy", "dignity", "rights", "welfare", "consent", "honesty",
+        "integrity", "trust", "accountability", "transparency", "bias",
+        "discrimination", "inequality", "oppression", "freedom", "liberty",
+        "utilitarianism", "deontology", "consequentialism", "care ethics"
+      ],
+      "disciplines": [
+        "ethics", "moral_philosophy", "political_philosophy", "law",
+        "bioethics", "AI_ethics", "environmental_ethics", "business_ethics",
+        "applied_ethics", "metaethics"
+      ],
+      "bridge_concepts": [
+        "autonomy", "dignity", "accountability", "harm", "rights",
+        "moral agency", "moral responsibility", "trolley problem",
+        "moral status", "moral community"
+      ]
+    },
+
+    {
+      "cluster_id": "politics_power",
+      "label": "Politics and Power",
+      "trigger_concepts": [
+        "politics", "political", "power", "governance", "government", "state",
+        "democracy", "authoritarian", "policy", "law", "regulation", "rights",
+        "citizenship", "sovereignty", "nation", "territory", "conflict",
+        "war", "peace", "negotiation", "diplomacy", "institution", "party",
+        "election", "voting", "ideology", "capitalism", "socialism",
+        "liberalism", "conservatism", "hegemony", "resistance", "protest",
+        "social movement", "revolution", "reform", "justice", "inequality"
+      ],
+      "disciplines": [
+        "political_science", "political_philosophy", "international_relations",
+        "law", "sociology", "history", "economics", "anthropology",
+        "media_studies", "public_administration"
+      ],
+      "bridge_concepts": [
+        "power", "hegemony", "sovereignty", "legitimacy", "social contract",
+        "Foucault", "Gramsci", "Arendt", "Rawls", "justice", "freedom"
+      ]
+    },
+
+    {
+      "cluster_id": "economics_work",
+      "label": "Economics and Labor",
+      "trigger_concepts": [
+        "economics", "economic", "market", "trade", "capital", "labor",
+        "work", "job", "employment", "unemployment", "income", "wealth",
+        "poverty", "inequality", "production", "consumption", "exchange",
+        "money", "price", "cost", "value", "profit", "growth", "recession",
+        "globalization", "automation", "productivity", "efficiency",
+        "supply", "demand", "competition", "monopoly", "regulation",
+        "taxation", "welfare", "redistribution", "development"
+      ],
+      "disciplines": [
+        "economics", "political_economy", "sociology", "anthropology",
+        "history", "development_studies", "labor_studies", "geography"
+      ],
+      "bridge_concepts": [
+        "mode of production", "division of labor", "alienation", "surplus value",
+        "Marx", "Keynes", "Smith", "market failure", "externality",
+        "human capital", "social reproduction"
+      ]
+    },
+
+    {
+      "cluster_id": "history_time",
+      "label": "History and Temporality",
+      "trigger_concepts": [
+        "history", "historical", "past", "future", "time", "temporal",
+        "change", "evolution", "development", "origin", "tradition",
+        "modernity", "postmodernity", "progress", "decline", "revolution",
+        "continuity", "rupture", "heritage", "memory", "archive",
+        "chronology", "period", "era", "epoch", "century", "ancient",
+        "medieval", "modern", "contemporary", "premodern", "narrative",
+        "historiography", "causation", "contingency", "determinism"
+      ],
+      "disciplines": [
+        "history", "historiography", "philosophy_of_history",
+        "sociology", "anthropology", "archaeology", "memory_studies",
+        "cultural_studies", "intellectual_history"
+      ],
+      "bridge_concepts": [
+        "longue durée", "Braudel", "Foucault", "genealogy", "archive",
+        "historical consciousness", "historicity", "memory", "trauma",
+        "periodization", "Whig history", "counterfactual"
+      ]
+    },
+
+    {
+      "cluster_id": "anthropology_culture",
+      "label": "Anthropology and Culture",
+      "trigger_concepts": [
+        "anthropology", "culture", "cultural", "ritual", "myth", "symbol",
+        "kinship", "tribe", "ethnography", "fieldwork", "ethnicity",
+        "indigenous", "tradition", "belief", "religion", "sacred",
+        "taboo", "gift", "exchange", "marriage", "family", "cosmology",
+        "worldview", "material culture", "body", "performance",
+        "identity", "difference", "other", "self", "belonging",
+        "diaspora", "migration", "colonialism", "postcolonial"
+      ],
+      "disciplines": [
+        "anthropology", "cultural_studies", "sociology", "religious_studies",
+        "postcolonial_studies", "area_studies", "archaeology", "folklore"
+      ],
+      "bridge_concepts": [
+        "thick description", "Geertz", "Lévi-Strauss", "Bourdieu",
+        "habitus", "field", "capital", "symbolic violence",
+        "liminality", "Turner", "rite of passage", "structuralism"
+      ]
+    },
+
+    {
+      "cluster_id": "philosophy_foundations",
+      "label": "Philosophy and Foundational Questions",
+      "trigger_concepts": [
+        "philosophy", "philosophical", "metaphysics", "ontology", "epistemology",
+        "existence", "being", "reality", "truth", "knowledge", "belief",
+        "justification", "certainty", "doubt", "skepticism", "idealism",
+        "materialism", "dualism", "monism", "causality", "necessity",
+        "possibility", "freedom", "determinism", "identity", "essence",
+        "appearance", "universal", "particular", "abstract", "concrete",
+        "analytic", "continental", "pragmatism", "phenomenology", "hermeneutics"
+      ],
+      "disciplines": [
+        "metaphysics", "epistemology", "philosophy_of_mind", "philosophy_of_language",
+        "philosophy_of_science", "ethics", "aesthetics", "logic",
+        "philosophy_of_mathematics", "phenomenology"
+      ],
+      "bridge_concepts": [
+        "Plato", "Aristotle", "Kant", "Hegel", "Nietzsche", "Heidegger",
+        "Wittgenstein", "Russell", "Frege", "Husserl", "Merleau-Ponty",
+        "a priori", "a posteriori", "analytic-synthetic distinction"
+      ]
+    },
+
+    {
+      "cluster_id": "nature_biology_life",
+      "label": "Nature, Biology, and Life",
+      "trigger_concepts": [
+        "nature", "natural", "biological", "biology", "life", "living",
+        "organism", "species", "evolution", "genetics", "gene", "DNA",
+        "cell", "protein", "metabolism", "reproduction", "adaptation",
+        "ecology", "ecosystem", "environment", "animal", "plant",
+        "microbe", "virus", "brain", "nervous system", "embodiment",
+        "embodied", "physical", "material", "matter", "energy",
+        "complexity", "emergence", "self-organization", "homeostasis"
+      ],
+      "disciplines": [
+        "biology", "evolutionary_biology", "ecology", "neuroscience",
+        "philosophy_of_biology", "cognitive_science", "biochemistry",
+        "genetics", "environmental_science", "medicine"
+      ],
+      "bridge_concepts": [
+        "natural selection", "fitness", "niche", "emergence", "autopoiesis",
+        "Maturana", "Varela", "Bateson", "Dawkins", "Gould",
+        "embodiment", "enactivism", "extended phenotype"
+      ]
+    },
+
+    {
+      "cluster_id": "knowledge_epistemology",
+      "label": "Knowledge and Epistemology",
+      "trigger_concepts": [
+        "knowledge", "knowing", "epistemology", "epistemic", "truth",
+        "belief", "evidence", "justification", "proof", "certainty",
+        "uncertainty", "information", "data", "fact", "hypothesis",
+        "theory", "model", "explanation", "understanding", "insight",
+        "discovery", "science", "scientific", "method", "experiment",
+        "observation", "measurement", "inference", "induction", "deduction",
+        "abduction", "paradigm", "falsification", "verification"
+      ],
+      "disciplines": [
+        "epistemology", "philosophy_of_science", "information_science",
+        "sociology_of_knowledge", "science_technology_studies",
+        "cognitive_science", "history_of_science", "logic"
+      ],
+      "bridge_concepts": [
+        "Kuhn", "Popper", "Lakatos", "Feyerabend", "paradigm shift",
+        "scientific revolution", "tacit knowledge", "Polanyi",
+        "situated knowledge", "standpoint epistemology"
+      ]
+    },
+
+    {
+      "cluster_id": "identity_selfhood",
+      "label": "Identity and Selfhood",
+      "trigger_concepts": [
+        "identity", "self", "subject", "person", "individual", "personality",
+        "character", "ego", "psyche", "soul", "agency", "will", "freedom",
+        "autonomy", "authenticity", "self-concept", "self-esteem",
+        "narrative identity", "recognition", "otherness", "alterity",
+        "intersubjectivity", "empathy", "emotion", "feeling", "affect",
+        "motivation", "desire", "intention", "belief", "preference",
+        "role", "status", "social identity", "group identity"
+      ],
+      "disciplines": [
+        "philosophy_of_mind", "psychology", "sociology", "phenomenology",
+        "psychoanalysis", "cultural_studies", "feminist_theory",
+        "postcolonial_studies", "developmental_psychology"
+      ],
+      "bridge_concepts": [
+        "Hegel recognition", "Sartre", "Beauvoir", "Butler", "performativity",
+        "Ricoeur narrative identity", "Honneth", "Freud", "Lacan",
+        "interpellation", "Althusser", "subject formation"
+      ]
+    },
+
+    {
+      "cluster_id": "law_governance",
+      "label": "Law and Governance",
+      "trigger_concepts": [
+        "law", "legal", "regulation", "rule", "norm", "compliance",
+        "rights", "obligation", "contract", "property", "liability",
+        "crime", "punishment", "justice", "court", "judge", "legislature",
+        "executive", "constitution", "sovereignty", "citizenship",
+        "international law", "human rights", "privacy", "data protection",
+        "intellectual property", "patent", "copyright", "governance",
+        "accountability", "transparency", "due process", "enforcement"
+      ],
+      "disciplines": [
+        "law", "jurisprudence", "political_science", "political_philosophy",
+        "sociology_of_law", "criminology", "international_relations",
+        "public_administration", "AI_law"
+      ],
+      "bridge_concepts": [
+        "rule of law", "legal positivism", "natural law", "Hart",
+        "Dworkin", "Rawls", "social contract", "Locke", "Rousseau",
+        "legitimacy", "authority", "judicial review"
+      ]
+    },
+
+    {
+      "cluster_id": "psychology_behavior",
+      "label": "Psychology and Behavior",
+      "trigger_concepts": [
+        "psychology", "psychological", "behavior", "mental health",
+        "cognition", "emotion", "motivation", "personality", "development",
+        "learning", "memory", "perception", "attention", "decision making",
+        "bias", "heuristic", "unconscious", "trauma", "attachment",
+        "anxiety", "depression", "wellbeing", "therapy", "treatment",
+        "social behavior", "group dynamics", "influence", "persuasion",
+        "habit", "addiction", "resilience", "coping", "stress"
+      ],
+      "disciplines": [
+        "psychology", "cognitive_science", "neuroscience", "psychiatry",
+        "behavioral_economics", "social_psychology", "developmental_psychology",
+        "clinical_psychology", "evolutionary_psychology"
+      ],
+      "bridge_concepts": [
+        "Freud", "Jung", "Piaget", "Vygotsky", "Kahneman", "Skinner",
+        "Bandura", "attachment theory", "Bowlby", "schema",
+        "dual process theory", "System 1 System 2"
+      ]
+    },
+
+    {
+      "cluster_id": "education_learning",
+      "label": "Education and Learning",
+      "trigger_concepts": [
+        "education", "learning", "teaching", "pedagogy", "school",
+        "curriculum", "knowledge transfer", "skill", "competence",
+        "literacy", "training", "instruction", "assessment", "feedback",
+        "motivation", "engagement", "understanding", "mastery",
+        "student", "teacher", "classroom", "university", "research",
+        "academic", "scholarship", "discipline", "expertise", "novice",
+        "apprenticeship", "informal learning", "lifelong learning"
+      ],
+      "disciplines": [
+        "education_science", "cognitive_science", "psychology",
+        "philosophy_of_education", "sociology_of_education",
+        "learning_sciences", "educational_technology", "anthropology"
+      ],
+      "bridge_concepts": [
+        "constructivism", "Piaget", "Vygotsky", "zone of proximal development",
+        "scaffolding", "situated learning", "communities of practice",
+        "Dewey", "Freire", "critical pedagogy", "transfer of learning"
+      ]
+    },
+
+    {
+      "cluster_id": "media_information",
+      "label": "Media, Information, and Communication",
+      "trigger_concepts": [
+        "media", "information", "communication", "network", "internet",
+        "social media", "platform", "algorithm", "news", "journalism",
+        "propaganda", "misinformation", "disinformation", "filter bubble",
+        "echo chamber", "attention", "engagement", "virality", "influence",
+        "surveillance", "privacy", "data", "digital", "broadcasting",
+        "publishing", "content", "narrative", "framing", "agenda"
+      ],
+      "disciplines": [
+        "media_studies", "communication_studies", "information_science",
+        "journalism", "sociology", "political_science", "cultural_studies",
+        "philosophy_of_technology", "science_technology_studies"
+      ],
+      "bridge_concepts": [
+        "McLuhan", "medium is the message", "Habermas public sphere",
+        "Baudrillard simulacra", "Debord spectacle", "Castells network society",
+        "gatekeeping", "framing theory", "agenda setting"
+      ]
+    },
+
+    {
+      "cluster_id": "art_aesthetics_creativity",
+      "label": "Art, Aesthetics, and Creativity",
+      "trigger_concepts": [
+        "art", "aesthetic", "aesthetics", "beauty", "creativity", "imagination",
+        "expression", "representation", "symbol", "meaning", "interpretation",
+        "taste", "judgment", "sublime", "art work", "performance", "music",
+        "literature", "poetry", "fiction", "narrative", "film", "image",
+        "design", "architecture", "craft", "style", "genre", "form",
+        "content", "emotion", "catharsis", "mimesis", "artist", "author"
+      ],
+      "disciplines": [
+        "aesthetics", "art_history", "literary_theory", "musicology",
+        "film_studies", "cultural_studies", "philosophy", "semiotics",
+        "sociology_of_art", "cognitive_science"
+      ],
+      "bridge_concepts": [
+        "Kant aesthetic judgment", "Benjamin aura", "Bourdieu cultural capital",
+        "hermeneutics", "Gadamer", "Ricoeur", "mimesis", "catharsis",
+        "defamiliarization", "Shklovsky", "reader response"
+      ]
+    },
+
+    {
+      "cluster_id": "religion_spirituality",
+      "label": "Religion and Spirituality",
+      "trigger_concepts": [
+        "religion", "religious", "spiritual", "faith", "belief", "god",
+        "divine", "sacred", "ritual", "prayer", "meditation", "theology",
+        "scripture", "doctrine", "church", "mosque", "temple", "synagogue",
+        "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism",
+        "atheism", "secularism", "transcendence", "meaning", "afterlife",
+        "soul", "karma", "salvation", "liberation", "mysticism", "ethics"
+      ],
+      "disciplines": [
+        "religious_studies", "theology", "philosophy_of_religion",
+        "anthropology", "sociology", "history", "psychology",
+        "comparative_religion", "phenomenology"
+      ],
+      "bridge_concepts": [
+        "Weber", "Durkheim", "James", "Eliade", "sacred and profane",
+        "charisma", "disenchantment", "Axial Age", "Jaspers",
+        "mystical experience", "secularization thesis"
+      ]
+    },
+
+    {
+      "cluster_id": "environment_sustainability",
+      "label": "Environment and Sustainability",
+      "trigger_concepts": [
+        "environment", "environmental", "ecology", "climate", "sustainability",
+        "nature", "ecosystem", "biodiversity", "pollution", "carbon",
+        "energy", "renewable", "fossil fuel", "green", "conservation",
+        "extinction", "species", "habitat", "land", "water", "air",
+        "resource", "waste", "recycling", "earth", "planet", "Anthropocene",
+        "climate change", "global warming", "adaptation", "mitigation"
+      ],
+      "disciplines": [
+        "environmental_science", "ecology", "environmental_philosophy",
+        "political_ecology", "geography", "economics", "law",
+        "sociology", "anthropology", "science_technology_studies"
+      ],
+      "bridge_concepts": [
+        "Anthropocene", "planetary boundaries", "commons", "Hardin",
+        "Ostrom", "Latour", "actor-network theory", "more-than-human",
+        "deep ecology", "Naess", "environmental justice"
+      ]
+    },
+
+    {
+      "cluster_id": "mathematics_logic",
+      "label": "Mathematics and Logic",
+      "trigger_concepts": [
+        "mathematics", "mathematical", "logic", "logical", "proof",
+        "theorem", "axiom", "formal", "abstract", "number", "set",
+        "function", "structure", "algebra", "geometry", "topology",
+        "probability", "statistics", "calculus", "optimization",
+        "computation", "algorithm", "complexity", "graph",
+        "model", "formal system", "Godel", "incompleteness", "consistency"
+      ],
+      "disciplines": [
+        "mathematics", "logic", "philosophy_of_mathematics",
+        "theoretical_computer_science", "statistics", "foundations_of_mathematics"
+      ],
+      "bridge_concepts": [
+        "Godel incompleteness", "Turing halting problem", "Church-Turing thesis",
+        "Frege", "Russell", "Hilbert program", "constructivism",
+        "formalism", "Platonism in mathematics", "category theory"
+      ]
+    },
+
+    {
+      "cluster_id": "health_medicine",
+      "label": "Health and Medicine",
+      "trigger_concepts": [
+        "health", "medicine", "medical", "disease", "illness", "patient",
+        "treatment", "therapy", "diagnosis", "symptom", "cure", "prevention",
+        "public health", "epidemiology", "clinical", "hospital", "drug",
+        "pharmaceutical", "surgery", "brain", "mental health", "psychiatry",
+        "psychology", "wellbeing", "aging", "death", "disability", "body",
+        "genome", "genetics", "biomarker", "imaging", "telemedicine"
+      ],
+      "disciplines": [
+        "medicine", "public_health", "bioethics", "neuroscience",
+        "psychology", "sociology_of_health", "philosophy_of_medicine",
+        "epidemiology", "genetics", "pharmacology"
+      ],
+      "bridge_concepts": [
+        "evidence-based medicine", "randomized controlled trial", "placebo",
+        "Hippocratic oath", "informed consent", "beneficence",
+        "non-maleficence", "medicalization", "Illich", "social determinants of health"
+      ]
+    },
+
+    {
+      "cluster_id": "space_place_geography",
+      "label": "Space, Place, and Geography",
+      "trigger_concepts": [
+        "space", "place", "geography", "territory", "region", "urban",
+        "rural", "city", "landscape", "border", "boundary", "migration",
+        "movement", "mobility", "globalization", "local", "global",
+        "distance", "proximity", "scale", "mapping", "cartography",
+        "geopolitics", "colonialism", "empire", "home", "belonging",
+        "displacement", "diaspora", "transnational", "cosmopolitan"
+      ],
+      "disciplines": [
+        "geography", "urban_studies", "anthropology", "sociology",
+        "political_science", "history", "architecture", "cultural_studies",
+        "postcolonial_studies", "environmental_science"
+      ],
+      "bridge_concepts": [
+        "Lefebvre production of space", "Massey place", "Harvey",
+        "Soja", "thirdspace", "Foucault heterotopia", "de Certeau",
+        "everyday life", "psychogeography", "Situationist International"
+      ]
+    },
+
+    {
+      "cluster_id": "social_change_justice",
+      "label": "Social Change and Justice",
+      "trigger_concepts": [
+        "justice", "injustice", "inequality", "discrimination", "oppression",
+        "privilege", "marginalization", "exclusion", "resistance", "movement",
+        "activism", "protest", "reform", "revolution", "emancipation",
+        "liberation", "solidarity", "intersectionality", "race", "gender",
+        "class", "colonialism", "postcolonial", "decolonial", "feminism",
+        "queer", "disability", "recognition", "redistribution", "representation"
+      ],
+      "disciplines": [
+        "sociology", "political_philosophy", "critical_theory",
+        "feminist_theory", "postcolonial_studies", "race_studies",
+        "disability_studies", "queer_theory", "anthropology", "law"
+      ],
+      "bridge_concepts": [
+        "Fraser", "Honneth", "Young", "Butler", "Spivak", "Fanon",
+        "Du Bois", "intersectionality", "Crenshaw", "standpoint theory",
+        "subaltern", "hegemony", "Gramsci", "praxis"
+      ]
+    },
+
+    {
+      "cluster_id": "complexity_systems",
+      "label": "Complexity and Systems Thinking",
+      "trigger_concepts": [
+        "system", "complex", "complexity", "emergence", "network",
+        "feedback", "nonlinear", "chaos", "self-organization",
+        "adaptation", "resilience", "robustness", "fragility",
+        "scale", "hierarchy", "modularity", "integration", "interaction",
+        "dynamic", "equilibrium", "phase transition", "bifurcation",
+        "attractor", "evolution", "coevolution", "ecosystem"
+      ],
+      "disciplines": [
+        "complexity_science", "systems_theory", "cybernetics",
+        "ecology", "economics", "sociology", "cognitive_science",
+        "biology", "physics", "philosophy_of_science"
+      ],
+      "bridge_concepts": [
+        "von Bertalanffy", "Wiener cybernetics", "Bateson", "Luhmann",
+        "autopoiesis", "Maturana", "Santa Fe Institute", "Kauffman",
+        "Holland", "emergence", "swarm intelligence", "stigmergy"
+      ]
+    }
+
+  ]
+}
