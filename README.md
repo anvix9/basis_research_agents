@@ -2,10 +2,11 @@
 
 A locally-running multi-agent system for deep, interdisciplinary research with only 3 dependencies. Give it a research question, it excavates the intellectual history, maps the gaps, proposes approaches, evaluates their feasibility, synthesises a research narrative, and produces a final document. You stay in control through three mandatory review breaks.
 
-A product example is here, without adding my personal modification during the hard breaks, to gauge by yourself the quality of the pipeline: [HERE](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md)
+The system produces a clear and consice understanding map in which the user can grasp all the necessary knowledge given a problem. A clear artifact can be found here:
+[understanding_map](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260407-022355-242D_understanding_map.md)
 
-IMPORTANT NOTE: This pipeline is not a replacement in scientific rigor as I still take my time to process most of the work and anlyze possible directions
-, however, it provides a reasonable depth collaboration between ai and scientist when things are done right.
+A derived but not the objective of the system is some research-briefs, or blog-posts alike products, one example is shared with the following: 
+[HERE](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md)
 
 ---
 
@@ -66,6 +67,7 @@ Three mandatory review breaks where the pipeline stops, produces a structured su
 | PhilPapers | Philosophy index | Optional (free) — skipped gracefully without key |
 | PhilArchive | Open access philosophy | None — OAI-PMH |
 | PhilSci-Archive | Philosophy of science | None — OAI-PMH |
+| Consensus | Academic Semantic Search | Optional (paid) |
 | **Google Books** | Books and monographs | Optional (free) — Grounder only |
 | **Open Library** | Books and monographs | None — Grounder only |
 | **Web search** | Broad coverage | Via Anthropic API — Grounder only |
