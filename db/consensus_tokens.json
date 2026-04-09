@@ -1,0 +1,24 @@
+{
+  "client_info": {
+    "redirect_uris": [
+      "http://localhost:9753/callback"
+    ],
+    "token_endpoint_auth_method": "none",
+    "grant_types": [
+      "authorization_code",
+      "refresh_token"
+    ],
+    "response_types": [
+      "code"
+    ],
+    "client_name": "ARANEA Research Pipeline",
+    "client_id": "64ea9d58-3e21-44cd-a3fe-e816dee07fcb"
+  },
+  "tokens": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NvbnNlbnN1cy5hcHAiLCJzdWIiOiJ1c2VyXzM4ZDdXZHRsTjQ1NWZSdEo0Y2dhY2xQeHpIaiIsImF1ZCI6Imh0dHBzOi8vbWNwLmNvbnNlbnN1cy5hcHAiLCJzY29wZSI6InNlYXJjaCIsInRpZXIiOiJwcm8iLCJpYXQiOjE3NzU2ODE1MjUsImV4cCI6MTc3NTY5NTkyNSwianRpIjoiODllOGRjOTktZDg3Zi00MGY1LWEwM2MtYmY1NDIwNWQ1NWZiIn0.ACzgOekLRFQPKAHVwNUVXSpn1W9UUt8LF1u0MW6SfRE",
+    "token_type": "Bearer",
+    "expires_in": 14400,
+    "scope": "search",
+    "refresh_token": "L2_7sKi5G43ecxxKZGhppivJcNoAb7kiT34rifZ3WEYl-GEFNBTXlOGI1DviAYXN"
+  }
+}

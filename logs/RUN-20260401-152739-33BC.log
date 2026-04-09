@@ -1,0 +1,21 @@
+2026-04-01 09:27:39,235 [INFO] core.database: Database initialized at /media/anvi/Alex_ssd/.lab/pipeline_core_v1/tt/basis_research_agents/db/pipeline.db
+2026-04-01 09:27:39,243 [INFO] pipeline: New run created: RUN-20260401-152739-33BC
+2026-04-01 09:27:39,246 [INFO] core.concept_mapper: [ConceptMapper] Expanding problem for run RUN-20260401-152739-33BC
+2026-04-01 09:27:39,247 [INFO] core.concept_mapper: [ConceptMapper] Extracted 28 raw terms: ['performance', 'small', 'scale', 'agricultural', 'production', 'units', 'compare', 'agro', 'industrial', 'terms']
+2026-04-01 09:27:39,282 [INFO] core.concept_mapper: [ConceptMapper] Expanded to 173 concepts via ConceptNet
+2026-04-01 09:27:39,282 [INFO] core.concept_mapper: [ConceptMapper] Activated 3 clusters, 17 disciplines
+2026-04-01 09:27:39,290 [INFO] core.llm: [social] Claude API call — model: claude-haiku-4-5-20251001 — attempt 1/3
+2026-04-01 09:27:46,255 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-01 09:27:46,280 [INFO] core.llm: [social] Claude API success — 3549 chars returned
+2026-04-01 09:27:46,280 [INFO] core.concept_mapper: [ConceptMapper] Final themes activated: ['anthropology', 'environmental_studies', 'science_technology_studies', 'political_science', 'economics', 'biology_life_sciences', 'agriculture_food_systems', 'development_studies', 'law', 'sociology', 'complexity_systems']
+2026-04-01 09:27:46,301 [INFO] pipeline: Concept mapper activated 11 themes
+2026-04-01 09:27:46,301 [INFO] agents.social: [Social] Pipeline feed for run RUN-20260401-152739-33BC: 11 themes selected, 14 excluded
+2026-04-01 09:27:47,660 [INFO] core.llm: [social] Claude API call — model: claude-haiku-4-5-20251001 — attempt 1/3
+2026-04-01 09:27:48,916 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-01 09:27:48,917 [INFO] core.llm: [social] Claude API success — 311 chars returned
+2026-04-01 09:27:49,941 [INFO] core.llm: [social] Claude API call — model: claude-haiku-4-5-20251001 — attempt 1/3
+2026-04-01 09:27:51,038 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-01 09:27:51,040 [INFO] core.llm: [social] Claude API success — 253 chars returned
+2026-04-01 09:27:51,887 [INFO] core.llm: [social] Claude API call — model: claude-haiku-4-5-20251001 — attempt 1/3
+2026-04-01 09:27:53,115 [INFO] httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-01 09:27:53,116 [INFO] core.llm: [social] Claude API success — 283 chars returned

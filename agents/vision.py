@@ -40,6 +40,9 @@ Every implication must be:
 
 Do NOT propose solutions, make recommendations, or theorize about what should be done.
 
+IMPORTANT — OUTPUT ORDER: Write Strong implications first, then Moderate, then Speculative.
+This ensures the most important implications are captured even if output is long.
+
 Output ONLY a valid JSON object:
 {
   "implications": [
@@ -79,8 +82,17 @@ def run(context: str, run_id: str, **kwargs):
         clean = re.sub(r"```(?:json)?|```", "", response).strip()
         data = json.loads(clean)
     except json.JSONDecodeError:
-        logger.warning("[Vision] JSON parse failed — partial extraction")
-        data = {"implications": [], "implications_map_summary": response[:2000]}
+        # Truncation recovery — extract any complete implication objects
+        # before the point of truncation
+        data = _salvage_truncated_json(clean)
+        if data["implications"]:
+            logger.warning(
+                f"[Vision] JSON truncated — salvaged {len(data['implications'])} implications. "
+                f"Consider raising vision token limit in llm.py."
+            )
+        else:
+            logger.warning("[Vision] JSON parse failed — no implications salvaged")
+            data = {"implications": [], "implications_map_summary": response[:2000]}
 
     saved = 0
     for imp in data.get("implications", []):
@@ -112,6 +124,48 @@ def run(context: str, run_id: str, **kwargs):
     strong = sum(1 for i in data.get("implications",[]) if i.get("strength") == "Strong")
     print(f"  [Vision] {saved} implications saved | {strong} Strong")
     logger.info("[Vision] Complete")
+
+
+def _salvage_truncated_json(text: str) -> dict:
+    """
+    Attempt to salvage implications from a truncated JSON response.
+    Extracts all complete { ... } implication objects found before the
+    truncation point using a brace-counting approach.
+    """
+    implications = []
+
+    # Find the start of the implications array
+    start = text.find('"implications"')
+    if start == -1:
+        return {"implications": [], "implications_map_summary": ""}
+
+    # Walk through the text collecting complete JSON objects
+    i = text.find('[', start)
+    if i == -1:
+        return {"implications": [], "implications_map_summary": ""}
+
+    depth = 0
+    obj_start = None
+    for j, ch in enumerate(text[i:], start=i):
+        if ch == '{':
+            if depth == 0:
+                obj_start = j
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0 and obj_start is not None:
+                try:
+                    obj = json.loads(text[obj_start:j+1])
+                    if obj.get("implication"):
+                        implications.append(obj)
+                except json.JSONDecodeError:
+                    pass
+                obj_start = None
+
+    return {
+        "implications": implications,
+        "implications_map_summary": f"Truncated response — {len(implications)} implications salvaged."
+    }
 
 
 def _save_doc(run_id: str, problem: str, data: dict):

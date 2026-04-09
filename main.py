@@ -193,28 +193,37 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
 
     agents = _import_agents()
 
-    grounder_ctx = for_grounder(run_id, problem, db.get_sources_by_type("current", run_id))
-    if not _run_step("Grounder", agents["grounder"], grounder_ctx, run_id):
-        _abort(run_id, "Grounder")
-        return
+    if _agent_done(run_id, "grounder"):
+        print("  ↩  Grounder already completed — skipping")
+    else:
+        grounder_ctx = for_grounder(run_id, problem, db.get_sources_by_type("current", run_id))
+        if not _run_step("Grounder", agents["grounder"], grounder_ctx, run_id):
+            _abort(run_id, "Grounder")
+            return
 
     # -----------------------------------------------------------------------
     # HISTORIAN
     # -----------------------------------------------------------------------
 
-    historian_ctx = for_historian(run_id, problem)
-    if not _run_step("Historian", agents["historian"], historian_ctx, run_id):
-        _abort(run_id, "Historian")
-        return
+    if _agent_done(run_id, "historian"):
+        print("  ↩  Historian already completed — skipping")
+    else:
+        historian_ctx = for_historian(run_id, problem)
+        if not _run_step("Historian", agents["historian"], historian_ctx, run_id):
+            _abort(run_id, "Historian")
+            return
 
     # -----------------------------------------------------------------------
     # GAPER
     # -----------------------------------------------------------------------
 
-    gaper_ctx = for_gaper(run_id, problem)
-    if not _run_step("Gaper", agents["gaper"], gaper_ctx, run_id):
-        _abort(run_id, "Gaper")
-        return
+    if _agent_done(run_id, "gaper"):
+        print("  ↩  Gaper already completed — skipping")
+    else:
+        gaper_ctx = for_gaper(run_id, problem)
+        if not _run_step("Gaper", agents["gaper"], gaper_ctx, run_id):
+            _abort(run_id, "Gaper")
+            return
 
     # -----------------------------------------------------------------------
     # BREAK 1
@@ -231,37 +240,49 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
     # VISION
     # -----------------------------------------------------------------------
 
-    vision_ctx = for_vision(run_id, problem, break1_instructions)
-    if not _run_step("Vision", agents["vision"], vision_ctx, run_id):
-        _abort(run_id, "Vision")
-        return
+    if _agent_done(run_id, "vision"):
+        print("  ↩  Vision already completed — skipping")
+    else:
+        vision_ctx = for_vision(run_id, problem, break1_instructions)
+        if not _run_step("Vision", agents["vision"], vision_ctx, run_id):
+            _abort(run_id, "Vision")
+            return
 
     # -----------------------------------------------------------------------
     # THEORIST
     # -----------------------------------------------------------------------
 
-    theorist_ctx = for_theorist(run_id, problem, break1_instructions)
-    if not _run_step("Theorist", agents["theorist"], theorist_ctx, run_id):
-        _abort(run_id, "Theorist")
-        return
+    if _agent_done(run_id, "theorist"):
+        print("  ↩  Theorist already completed — skipping")
+    else:
+        theorist_ctx = for_theorist(run_id, problem, break1_instructions)
+        if not _run_step("Theorist", agents["theorist"], theorist_ctx, run_id):
+            _abort(run_id, "Theorist")
+            return
 
     # -----------------------------------------------------------------------
     # RUDE
     # -----------------------------------------------------------------------
 
-    rude_ctx = for_rude(run_id, problem, break1_instructions)
-    if not _run_step("Rude", agents["rude"], rude_ctx, run_id):
-        _abort(run_id, "Rude")
-        return
+    if _agent_done(run_id, "rude"):
+        print("  ↩  Rude already completed — skipping")
+    else:
+        rude_ctx = for_rude(run_id, problem, break1_instructions)
+        if not _run_step("Rude", agents["rude"], rude_ctx, run_id):
+            _abort(run_id, "Rude")
+            return
 
     # -----------------------------------------------------------------------
     # SYNTHESIZER
     # -----------------------------------------------------------------------
 
-    synthesizer_ctx = for_synthesizer(run_id, problem, break1_instructions)
-    if not _run_step("Synthesizer", agents["synthesizer"], synthesizer_ctx, run_id):
-        _abort(run_id, "Synthesizer")
-        return
+    if _agent_done(run_id, "synthesizer"):
+        print("  ↩  Synthesizer already completed — skipping")
+    else:
+        synthesizer_ctx = for_synthesizer(run_id, problem, break1_instructions)
+        if not _run_step("Synthesizer", agents["synthesizer"], synthesizer_ctx, run_id):
+            _abort(run_id, "Synthesizer")
+            return
 
     # -----------------------------------------------------------------------
     # BREAK 2
@@ -272,7 +293,20 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
         logger.info(f"Break 2 instructions received: {len(break2_instructions)} chars")
     else:
         print("  ↩  Break 2 already completed — resuming")
-        break2_instructions = "CONFIRMED\nSCRIBE OUTPUT: research_brief | audience: researcher"
+        # Try to recover actual instructions from the break2 review file
+        import re as _re
+        from pathlib import Path as _Path
+        _b2_path = _Path("artifacts") / f"{run_id}_break2_review.md"
+        if _b2_path.exists():
+            _b2_text = _b2_path.read_text()
+            # Instructions are everything after "**Your instructions:**"
+            _marker = "**Your instructions:**"
+            if _marker in _b2_text:
+                break2_instructions = _b2_text.split(_marker, 1)[1].strip()
+            else:
+                break2_instructions = "CONFIRMED\nSCRIBE OUTPUT: research_brief | audience: researcher"
+        else:
+            break2_instructions = "CONFIRMED\nSCRIBE OUTPUT: research_brief | audience: researcher"
 
     # Parse Scribe output requests
     scribe_requests = breaks.parse_scribe_requests(break2_instructions)
@@ -281,10 +315,28 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
     # THINKER
     # -----------------------------------------------------------------------
 
-    thinker_ctx = for_thinker(run_id, problem, break2_instructions)
-    if not _run_step("Thinker", agents["thinker"], thinker_ctx, run_id):
-        _abort(run_id, "Thinker")
-        return
+    if _agent_done(run_id, "thinker"):
+        print("  ↩  Thinker already completed — skipping")
+    else:
+        thinker_ctx = for_thinker(run_id, problem, break2_instructions)
+        if not _run_step("Thinker", agents["thinker"], thinker_ctx, run_id):
+            _abort(run_id, "Thinker")
+            return
+
+    # -----------------------------------------------------------------------
+    # SCRIBE — Understanding Map (always generated, every run)
+    # -----------------------------------------------------------------------
+
+    from core.context import for_understanding_map
+    umap_ctx = for_understanding_map(run_id, problem)
+    if not _run_step(
+        "Scribe [understanding_map]",
+        agents["scribe"],
+        umap_ctx,
+        run_id,
+        extra={"output_type": "understanding_map", "audience": "researcher"}
+    ):
+        logger.warning("Scribe failed for understanding_map — continuing")
 
     # -----------------------------------------------------------------------
     # SCRIBE — one artifact per requested output type
@@ -328,7 +380,38 @@ def _abort(run_id: str, step: str):
     logging.getLogger("pipeline").error(f"Pipeline aborted at: {step}")
     print(f"\n  Pipeline aborted at step: {step}")
     print(f"  Run ID saved: {run_id}")
-    print(f"  You can resume with: python3 main.py run --problem '...' --run-id {run_id} --resume")
+    print(f"  You can resume with: python3 main.py run --problem \'...\'  --run-id {run_id} --resume")
+
+
+def _agent_done(run_id: str, agent: str) -> bool:
+    """
+    Infer whether an agent already ran for this run by checking for data
+    in the table it writes to. Used to skip re-running agents on resume.
+
+    Table presence map:
+      grounder   → seminal sources
+      historian  → historical sources
+      gaper      → gaps
+      vision     → implications
+      theorist   → proposals
+      rude       → evaluations
+      synthesizer→ synthesis record
+      thinker    → directions
+      scribe     → artifacts
+    """
+    checks = {
+        "grounder":    lambda: bool(db.get_sources_by_type("seminal",    run_id)),
+        "historian":   lambda: bool(db.get_sources_by_type("historical", run_id)),
+        "gaper":       lambda: bool(db.get_gaps(run_id)),
+        "vision":      lambda: bool(db.get_implications(run_id)),
+        "theorist":    lambda: bool(db.get_proposals(run_id)),
+        "rude":        lambda: bool(db.get_evaluations(run_id)),
+        "synthesizer": lambda: db.get_synthesis(run_id) is not None,
+        "thinker":     lambda: bool(db.get_directions(run_id)),
+        "scribe":      lambda: bool(db.get_artifacts(run_id)),
+    }
+    check = checks.get(agent)
+    return bool(check and check())
 
 
 # ---------------------------------------------------------------------------
@@ -459,20 +542,72 @@ def cmd_keys(args):
     print_key_status()
 
 
-    """List recent runs."""
-    db.init_db()
-    runs = db.fetch("runs")
-    runs.sort(key=lambda r: r.get("created_at",""), reverse=True)
-    if not runs:
-        print("\n  No runs found.")
+def cmd_test(args):
+    """Test a single source handler with a query and show the raw response."""
+    source  = args.source
+    query   = args.query
+
+    from agents.social import SOURCE_HANDLERS
+    from core.keys import print_key_status
+
+    handler = SOURCE_HANDLERS.get(source)
+    if not handler:
+        print(f"\n  ERROR: Unknown source '{source}'")
+        print(f"  Available: {', '.join(SOURCE_HANDLERS.keys())}")
         return
+
     print(f"\n{'='*60}")
-    print(f"  Recent Runs")
-    print(f"{'='*60}")
-    for r in runs[:20]:
-        breaks_done = sum([r.get("break0_done",0), r.get("break1_done",0), r.get("break2_done",0)])
-        print(f"  {r['run_id']}  [{r['status']}]  breaks:{breaks_done}/3")
-        print(f"    {r['problem'][:60]}")
+    print(f"  Source Test — {source}")
+    print(f"  Query:  {query}")
+    print(f"{'='*60}\n")
+
+    # Show key status for context
+    print_key_status()
+
+    print(f"  Running query...\n")
+    try:
+        results = handler.search(query, [], limit=3, run_id="TEST")
+    except Exception as e:
+        print(f"  ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return
+
+    if not results:
+        print("  No results returned.")
+        print()
+        if source == "scopus":
+            print("  Possible reasons:")
+            print("  - Not on institutional IP/VPN")
+            print("  - SCOPUS_API_KEY not set in .env")
+            print("  - API key not yet activated by Elsevier")
+        return
+
+    print(f"  {len(results)} result(s) returned\n")
+    print(f"{'─'*60}")
+
+    for i, r in enumerate(results, 1):
+        print(f"\n  [{i}] {r.get('title','(no title)')}")
+        print(f"       Authors:  {', '.join(r.get('authors', [])[:3]) or '(none)'}")
+        print(f"       Year:     {r.get('year', '?')}")
+        print(f"       Journal:  {r.get('journal', r.get('source_name',''))}")
+        print(f"       DOI:      {r.get('doi', '(none)')}")
+        print(f"       Link:     {r.get('active_link', '(none)')}")
+        if r.get('cited_by') is not None:
+            print(f"       Cited by: {r['cited_by']}")
+        abstract = r.get('abstract', '')
+        if abstract:
+            print(f"       Abstract: {abstract[:300]}{'...' if len(abstract) > 300 else ''}")
+        else:
+            print(f"       Abstract: (empty — check IP/VPN if using Scopus)")
+
+    print(f"\n{'='*60}")
+    if source == "scopus" and results:
+        has_abstracts = any(r.get('abstract') for r in results)
+        if has_abstracts:
+            print("  ✅ Abstracts present — institutional access confirmed")
+        else:
+            print("  ⚠️  No abstracts — you may need to connect to VPN")
     print()
 
 
@@ -523,6 +658,14 @@ Commands:
     # keys
     p_keys = sub.add_parser("keys", help="Show API key status")
     p_keys.set_defaults(func=cmd_keys)
+
+    # test
+    p_test = sub.add_parser("test", help="Test a single source handler")
+    p_test.add_argument("--source", required=True,
+                        help="Source to test (e.g. scopus, openalex, arxiv)")
+    p_test.add_argument("--query",  required=True,
+                        help="Search query to run")
+    p_test.set_defaults(func=cmd_test)
 
     # runs
     p_runs = sub.add_parser("runs", help="List recent runs")

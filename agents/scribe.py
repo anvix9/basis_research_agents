@@ -178,16 +178,80 @@ Rules:
 - Every claim grounded in pipeline outputs
 
 Output ONLY the LaTeX body content. No \\begin{{document}}.""",
-}
+"understanding_map": """You are the Scribe agent producing a RESEARCH UNDERSTANDING MAP.
 
-# Format mapping
+This is the core mandatory output — generated for every pipeline run regardless of what the researcher requested.
+Its purpose is NOT to summarise the findings. Its purpose is to actively guide the researcher through the intellectual territory so they can achieve genuine comprehension, not just awareness.
+
+Format: Markdown (.md)
+Audience: The researcher conducting this investigation — someone who has run this pipeline and now needs to deeply understand the field before proposing their own contribution.
+
+---
+
+STRUCTURE (follow this exactly):
+
+## 1. The Territory at a Glance
+A single dense paragraph (150-200 words) that frames the intellectual landscape. Not a summary — a map legend. What are the 2-3 central tensions that organise this entire field? What is the one question that, if answered, would unlock everything else? What kind of field is this — one with empirical consensus but conceptual confusion, or one with competing frameworks and no shared method?
+
+## 2. The Intellectual Genealogy — How We Got Here
+A narrative (300-400 words) tracing the intellectual lineage from foundational ideas to the present. Written as a story of ideas, not a list of papers. Show causality: who was responding to whom, what broke what framework, what vindicated what dismissed approach. The researcher must feel the trajectory, not just know the milestones.
+
+## 3. The Reading Curriculum
+Organise the seminal works into THREE tiers. For each work:
+  - Title, Author, Year
+  - Why you read it at this tier (not what it says — why the ORDER matters)
+  - What to look for while reading (2-3 specific active reading prompts)
+  - What it connects to (which other works it responds to or anticipates)
+
+**Tier 1 — Foundations (read first):** Works that establish the basic vocabulary and frame the problem. Without these, later works are opaque.
+
+**Tier 2 — The Main Debates (read second):** Works where the central tensions crystallised. These are the works where the field divided — understanding each position here is essential before engaging with current literature.
+
+**Tier 3 — The Current Frontier (read third):** Recent work that represents where the field is now. Read these AFTER the foundations — their significance is only visible against the historical background.
+
+## 4. The Conceptual Map — How the Ideas Connect
+A structured prose section (250-350 words) describing the relationships between key concepts, NOT between papers. Which concepts are contested? Which definitions are doing hidden theoretical work? Where does an apparent consensus actually rest on an unresolved disagreement one level deeper? This section should be readable as a standalone guide to the intellectual architecture.
+
+## 5. The Unresolved Core
+Identify the single most important unresolved question in the field — the one that the pipeline found unanswered and that the researcher's own work could engage with. Explain:
+  - Why this question remains open (is it empirically underdetermined? philosophically contested? methodologically blocked?)
+  - What a genuine contribution to this question would require
+  - What distinguishes a superficial engagement with this question from a deep one
+
+## 6. Self-Assessment Questions — Test Your Understanding
+Generate exactly 8 questions. These are NOT factual recall questions. They are Socratic questions that test whether the researcher has understood the STRUCTURE of the field — the tensions, the assumptions, the logical dependencies.
+
+For each question:
+  - State the question clearly
+  - Provide the answer (2-4 sentences)
+  - Explain why this question matters for the researcher's own work
+
+Questions should test:
+  - Whether the researcher understands WHY a debate is unresolvable (not just what the positions are)
+  - Whether the researcher can identify hidden assumptions in dominant frameworks
+  - Whether the researcher understands what a genuine contribution would require
+  - Whether the researcher can distinguish empirical gaps from conceptual ones
+  - Whether the researcher understands the historical reasons why certain approaches were abandoned
+
+---
+
+RULES:
+- Every reading recommendation must come from the pipeline's seminal works — do not invent sources
+- The active reading prompts must be specific to each work — not generic "take notes as you read"
+- The assessment questions must have correct, substantive answers grounded in the pipeline outputs
+- Do not summarise the pipeline outputs — transform them into intellectual guidance
+- The tone is that of a rigorous academic supervisor preparing a graduate student for their first major reading
+
+Output ONLY the markdown content. No preamble.""",
+}
 FORMAT_MAP = {
-    "blog_post":        "md",
-    "research_brief":   "md",
-    "internal_memo":    "md",
+    "blog_post":         "md",
+    "research_brief":    "md",
+    "internal_memo":     "md",
     "literature_review": "tex",
-    "paper_section":    "tex",
-    "grant_background": "tex",
+    "paper_section":     "tex",
+    "grant_background":  "tex",
+    "understanding_map": "md",
 }
 
 
@@ -267,12 +331,13 @@ def run(context: str, run_id: str, output_type: str = "research_brief",
 def _make_title(problem: str, output_type: str) -> str:
     """Generate a short title from the problem."""
     prefix = {
-        "blog_post":        "Blog Post",
-        "research_brief":   "Research Brief",
-        "internal_memo":    "Internal Memo",
+        "blog_post":         "Blog Post",
+        "research_brief":    "Research Brief",
+        "internal_memo":     "Internal Memo",
         "literature_review": "Literature Review",
-        "paper_section":    "Paper Section",
-        "grant_background": "Grant Background",
+        "paper_section":     "Paper Section",
+        "grant_background":  "Grant Background",
+        "understanding_map": "Understanding Map",
     }.get(output_type, "Research Output")
     short_problem = problem[:60] + ("..." if len(problem) > 60 else "")
     return f"{prefix}: {short_problem}"

@@ -85,6 +85,18 @@ def anthropic() -> str:
 def google_books() -> str:
     return get("GOOGLE_BOOKS_API_KEY", required=False, source_name="Google Books (optional — higher quota)")
 
+def scopus_api_key() -> str:
+    return get("SCOPUS_API_KEY", required=False, source_name="Scopus (optional — needs institutional IP/VPN)")
+
+def scopus_inst_token() -> str:
+    return get("SCOPUS_INST_TOKEN", required=False, source_name="Scopus institutional token (optional — email datasupport@elsevier.com)")
+
+def consensus_mcp_status() -> str:
+    """Consensus uses MCP OAuth — check db/consensus_tokens.json for token status."""
+    from pathlib import Path
+    token_file = Path(__file__).parent.parent / "db" / "consensus_tokens.json"
+    return "authenticated" if token_file.exists() else "not authenticated (run pipeline once to trigger OAuth)"
+
 
 def print_key_status():
     """Print a clear table of which keys are set and which are missing."""
@@ -96,6 +108,8 @@ def print_key_status():
         ("CORE_API_KEY",            "CORE",             False, "core.ac.uk/services/api"),
         ("PHILPAPERS_API_ID",       "PhilPapers ID",    False, "philpapers.org/utils/create_api_user.html"),
         ("PHILPAPERS_API_KEY",      "PhilPapers Key",   False, "philpapers.org/utils/create_api_user.html"),
+        ("SCOPUS_API_KEY",          "Scopus",           False, "dev.elsevier.com → Create API Key"),
+        ("SCOPUS_INST_TOKEN",        "Scopus Inst Token",False, "email datasupport@elsevier.com"),
         ("GOOGLE_BOOKS_API_KEY",    "Google Books",     False, "console.cloud.google.com → Books API"),
         ("ANTHROPIC_API_KEY",       "Anthropic Claude", True,  "console.anthropic.com"),
     ]

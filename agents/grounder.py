@@ -360,6 +360,36 @@ def _search_web(query: str) -> list[dict]:
         return []
 
 
+def _search_consensus(query: str) -> list[dict]:
+    """
+    Semantic search via Consensus MCP — 200M+ peer-reviewed papers.
+    Particularly valuable for Grounder because Consensus finds conceptually
+    relevant seminal works even when exact keyword terms don't match.
+    Falls back silently if not authenticated or unavailable.
+    """
+    try:
+        from core.consensus_mcp import search_consensus
+        results = search_consensus(query)
+        out = []
+        for r in results:
+            out.append({
+                "title":         r.get("title", ""),
+                "authors":       r.get("authors", []),
+                "year":          r.get("year"),
+                "source_name":   "consensus",
+                "doi":           r.get("doi", ""),
+                "abstract":      r.get("abstract", ""),
+                "active_link":   r.get("active_link", ""),
+                "cited_by":      r.get("cited_by", 0),
+                "material_type": "paper",
+                "link_status":   "active",
+            })
+        return out
+    except Exception as e:
+        logger.warning(f"[Grounder/Consensus] {e}")
+        return []
+
+
 # ---------------------------------------------------------------------------
 # Link verification
 # ---------------------------------------------------------------------------
@@ -465,6 +495,17 @@ def run(context: str, run_id: str, **kwargs):
                 source_texts.append(
                     f"[{q_id}/S2] {r['title']} ({r.get('year','?')}) "
                     f"— {', '.join(r['authors'][:2])} | {r['abstract'][:300]}"
+                )
+
+        # Academic papers — Consensus (semantic search, finds conceptual matches)
+        if paper_query:
+            results = _search_consensus(paper_query)
+            all_sources.extend(results)
+            for r in results:
+                cited = f" | cited: {r['cited_by']}" if r.get("cited_by") else ""
+                source_texts.append(
+                    f"[{q_id}/Consensus] {r['title']} ({r.get('year','?')}) "
+                    f"— {', '.join(r['authors'][:2])}{cited} | {r['abstract'][:300]}"
                 )
 
         # Books — Google Books

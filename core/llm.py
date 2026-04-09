@@ -42,12 +42,12 @@ AGENT_MAX_TOKENS = {
     "theorist":    16000,  # multiple proposals each with full fields
     "historian":   10000,  # chronological map can be long
     "synthesizer": 10000,  # narrative + full bibliography
-    "gaper":        8192,
-    "vision":      10000,
-    "rude":         8192,
-    "thinker":      8192,
-    "social":       4096,
-    "scribe":      16000,
+    "gaper":       12000,
+    "vision":      16000,
+    "rude":        10000,
+    "thinker":     12000,
+    "social":      10000,
+    "scribe":      12000,
 }
 
 

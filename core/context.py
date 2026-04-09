@@ -212,6 +212,95 @@ def for_thinker(run_id: str, problem: str, break2_instructions: str = None) -> s
     return ctx
 
 
+def for_understanding_map(run_id: str, problem: str) -> str:
+    """
+    Context for the Understanding Map — the core mandatory Scribe output.
+    Provides the richest possible context: seminal works, historical timeline,
+    gaps, implications, proposals, synthesis, and directions.
+    """
+    seminal     = db.get_sources_by_type("seminal",    run_id)
+    historical  = db.get_sources_by_type("historical", run_id)
+    gaps        = db.get_gaps(run_id)
+    implications = db.get_implications(run_id)
+    proposals   = db.get_proposals(run_id)
+    evaluations = db.get_evaluations(run_id)
+    synthesis   = db.get_synthesis(run_id)
+    directions  = db.get_directions(run_id)
+
+    ctx  = f"PROBLEM:\n{problem}\n"
+    ctx += f"\nOUTPUT TYPE: understanding_map\n"
+
+    # Seminal works — the core of the reading curriculum
+    if seminal:
+        ctx += "\n=== SEMINAL WORKS (for reading curriculum) ===\n"
+        for s in seminal[:25]:
+            authors = json.loads(s.get("authors") or "[]") if s.get("authors") else []
+            author_str = ", ".join(authors[:3])
+            ctx += (
+                f"\n- [{s.get('year','n.d.')}] {s.get('title','Untitled')}"
+                f" — {author_str}"
+                f"\n  Reason: {s.get('seminal_reason','')}"
+                f"\n  Abstract: {(s.get('abstract','') or '')[:400]}"
+            )
+
+    # Historical timeline — for the intellectual genealogy section
+    if historical:
+        ctx += "\n\n=== HISTORICAL SOURCES (for genealogy narrative) ===\n"
+        for s in sorted(historical, key=lambda x: x.get('year') or 9999)[:20]:
+            authors = json.loads(s.get("authors") or "[]") if s.get("authors") else []
+            ctx += (
+                f"\n- [{s.get('year','n.d.')}] {s.get('title','')}"
+                f" — {', '.join(authors[:2])}"
+                f"\n  {s.get('historical_reason','')}"
+            )
+
+    # Gaps — for unresolved core section and assessment questions
+    if gaps:
+        ctx += "\n\n=== GAPS (for unresolved core and assessment) ===\n"
+        for g in gaps[:15]:
+            ctx += (
+                f"\n- [{g.get('significance','')}] [{g.get('gap_type','')}]"
+                f" {g.get('description','')}"
+            )
+
+    # Implications — for conceptual map section
+    if implications:
+        ctx += "\n\n=== IMPLICATIONS (for conceptual map) ===\n"
+        for i in implications[:12]:
+            ctx += (
+                f"\n- [{i.get('strength','')}] {i.get('implication','')}"
+                f"\n  Hidden assumption: {i.get('assumption_note','') if i.get('hidden_assumption') else 'none flagged'}"
+            )
+
+    # Synthesis — for territory overview and trajectory
+    if synthesis:
+        ctx += f"\n\n=== SYNTHESIS ===\n"
+        ctx += f"Sharpened problem: {synthesis.get('sharpened_problem','')}\n"
+        ctx += f"Trajectory: {synthesis.get('trajectory_statement','')}\n"
+        ctx += f"Key tensions: {str(synthesis.get('key_tensions',''))[:600]}\n"
+        ctx += f"Narrative: {(synthesis.get('full_narrative','') or '')[:1200]}\n"
+
+    # Proposals + verdicts — for assessment questions about feasibility
+    viable   = [p for p in proposals if p.get("status") == "feasible"]
+    infeasible = [p for p in proposals if p.get("status") == "infeasible"]
+    if viable or infeasible:
+        ctx += "\n\n=== PROPOSALS AND VERDICTS (for assessment questions) ===\n"
+        for p in (viable + infeasible)[:8]:
+            ev = next((e for e in evaluations if e.get("proposal_id") == p.get("proposal_id")), {})
+            ctx += (
+                f"\n- [{ev.get('verdict','?')}] {p.get('proposal','')[:200]}"
+                f"\n  Why: {(ev.get('verdict_reason','') or '')[:200]}"
+            )
+
+    # Thinker directions — for assessment questions about new directions
+    if directions:
+        ctx += "\n\n=== NEW DIRECTIONS (Thinker) ===\n"
+        for d in directions[:8]:
+            ctx += f"\n- [{d.get('distance_rating','')}] [{d.get('direction_type','')}] {d.get('direction','')}"
+
+    return ctx
+
+
 def for_scribe(
     run_id: str,
     problem: str,

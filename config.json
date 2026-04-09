@@ -33,7 +33,9 @@
         "semantic_scholar",
         "core",
         "philarchive",
-        "philsci"
+        "philsci",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -62,7 +64,9 @@
         "semantic_scholar",
         "core",
         "philarchive",
-        "philsci"
+        "philsci",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -92,7 +96,9 @@
         "core",
         "jstor",
         "philarchive",
-        "philsci"
+        "philsci",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -122,7 +128,9 @@
         "core",
         "jstor",
         "philarchive",
-        "philsci"
+        "philsci",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -149,7 +157,9 @@
         "openalex",
         "semantic_scholar",
         "core",
-        "philpapers"
+        "philpapers",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -170,23 +180,15 @@
           "seed": "AI alignment",
           "expansion_depth": 1,
           "boundary_note": "stay within AI safety and alignment"
-        },
-        {
-          "seed": "machine vision learning",
-          "expansion_depth": 1,
-          "boundary_note": "stay within learning algorithms"
-        },
-        {
-          "seed": "Artificial general intelligence",
-          "expansion_depth": 1,
-          "boundary_note": "stay within learning algorithms, new generation of ai."
         }
       ],
       "sources": [
         "arxiv",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -213,7 +215,9 @@
         "openalex",
         "pubmed",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -240,7 +244,9 @@
         "pubmed",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -267,7 +273,9 @@
         "pubmed",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -295,7 +303,9 @@
         "openalex",
         "semantic_scholar",
         "ssrn",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -323,7 +333,9 @@
         "openalex",
         "semantic_scholar",
         "core",
-        "base"
+        "base",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -352,7 +364,9 @@
         "semantic_scholar",
         "core",
         "base",
-        "persee"
+        "persee",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -380,7 +394,9 @@
         "openalex",
         "semantic_scholar",
         "ssrn",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -408,7 +424,9 @@
         "openalex",
         "semantic_scholar",
         "ssrn",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -436,7 +454,9 @@
         "openalex",
         "semantic_scholar",
         "ssrn",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -465,7 +485,9 @@
         "semantic_scholar",
         "core",
         "philarchive",
-        "philsci"
+        "philsci",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -492,7 +514,9 @@
         "eric",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -519,7 +543,9 @@
         "jstor",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -547,7 +573,9 @@
         "openalex",
         "arxiv",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -574,7 +602,9 @@
         "openalex",
         "semantic_scholar",
         "core",
-        "jstor"
+        "jstor",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -601,7 +631,9 @@
         "openalex",
         "arxiv",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -629,7 +661,9 @@
         "arxiv",
         "semantic_scholar",
         "core",
-        "philpapers"
+        "philpapers",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -656,7 +690,9 @@
         "jstor",
         "openalex",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -688,7 +724,9 @@
         "openalex",
         "pubmed",
         "semantic_scholar",
-        "core"
+        "core",
+        "scopus",
+        "consensus"
       ]
     },
     {
@@ -720,7 +758,9 @@
         "openalex",
         "semantic_scholar",
         "core",
-        "jstor"
+        "jstor",
+        "scopus",
+        "consensus"
       ]
     }
   ],
@@ -779,7 +819,9 @@
       "enabled": false
     },
     "consensus": {
-      "enabled": false
+      "api_url": "https://api.consensus.app/v1/quick_search",
+      "enabled": true,
+      "_note": "Semantic search \u2014 works without key (3 results), free account (10 results), Pro (20 results). No IP restriction."
     },
     "philarchive": {
       "api_url": "https://philarchive.org/oai.pl",
@@ -790,6 +832,11 @@
       "api_url": "https://philsci-archive.pitt.edu/cgi/oai2",
       "enabled": true,
       "_note": "No credentials needed \u2014 philosophy of science preprints"
+    },
+    "scopus": {
+      "api_url": "https://api.elsevier.com/content/search/scopus",
+      "enabled": true,
+      "_note": "Requires SCOPUS_API_KEY + institutional IP or VPN. Institutional token optional."
     }
   },
   "recheck_schedule": "twice_weekly",

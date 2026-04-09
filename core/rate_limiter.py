@@ -36,6 +36,8 @@ SOURCE_LIMITS = {
     "philpapers":       (2.0,   None,    "No official docs — conservative"),
     "philarchive":      (2.0,   None,    "PhilPapers open archive — OAI-PMH"),
     "philsci":          (2.0,   None,    "PhilSci-Archive Pittsburgh — OAI-PMH"),
+    "scopus":           (1.0,   None,    "Elsevier Scopus — needs institutional IP or VPN"),
+    "consensus":        (0.5,   None,    "Consensus semantic search — 200M+ papers"),
     "jstor":            (2.0,   None,    "Conservative — limited API access"),
     "ssrn":             (2.0,   None,    "Conservative"),
     "base":             (1.0,   None,    "BASE search API"),

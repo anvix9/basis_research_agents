@@ -491,6 +491,233 @@ class PhilSciHandler(SourceHandler):
 
 
 # ---------------------------------------------------------------------------
+# Scopus — Elsevier's citation and abstract database
+# Requires API key from dev.elsevier.com (free for academic use)
+# Institutional token optional — gives full abstract access and higher limits
+# Must be called from institutional IP or VPN
+# ---------------------------------------------------------------------------
+
+class ScopusHandler(SourceHandler):
+    SOURCE_ID = "scopus"
+    BASE_URL  = "https://api.elsevier.com/content/search/scopus"
+
+    def _headers(self) -> dict:
+        from core.keys import get as get_key
+        api_key   = get_key("SCOPUS_API_KEY")
+        inst_token = get_key("SCOPUS_INST_TOKEN")
+        if not api_key:
+            return {}
+        h = {
+            "Accept":       "application/json",
+            "X-ELS-APIKey": api_key,
+        }
+        if inst_token:
+            h["X-ELS-Insttoken"] = inst_token
+        return h
+
+    def _build_query(self, query: str) -> str:
+        """
+        Convert a plain keyword query into Scopus TITLE-ABS-KEY syntax.
+        Handles multi-word phrases and simple keyword combinations.
+
+        Examples:
+            'consciousness AI'          → TITLE-ABS-KEY("consciousness" AND "AI")
+            '"smallholder farming"'     → TITLE-ABS-KEY("smallholder farming")
+            'food security climate'     → TITLE-ABS-KEY("food security" AND "climate")
+        """
+        # If query already has Scopus field codes, pass through
+        if "TITLE-ABS-KEY" in query or "TITLE(" in query:
+            return query
+
+        # Strip existing quotes for re-processing
+        clean = query.replace('"', '').strip()
+
+        # Split on AND/OR if present — preserve structure
+        if " AND " in clean.upper() or " OR " in clean.upper():
+            import re
+            parts = re.split(r'\s+AND\s+|\s+OR\s+', clean, flags=re.IGNORECASE)
+            ops   = re.findall(r'\s+(AND|OR)\s+', clean, flags=re.IGNORECASE)
+            scopus_parts = [f'"{p.strip()}"' for p in parts if p.strip()]
+            joined = ""
+            for i, part in enumerate(scopus_parts):
+                joined += part
+                if i < len(ops):
+                    joined += f" {ops[i].upper()} "
+            return f"TITLE-ABS-KEY({joined})"
+
+        # Single phrase or space-separated keywords
+        # If 2+ words, treat as phrase
+        words = clean.split()
+        if len(words) == 1:
+            return f'TITLE-ABS-KEY("{clean}")'
+        else:
+            # Two-word: treat as phrase
+            # Three+ words: treat as phrase (Grounder queries are already contextual)
+            return f'TITLE-ABS-KEY("{clean}")'
+
+    def search(self, query: str, keywords: list[str], limit: int = 10,
+               run_id: str = "") -> list[dict]:
+        from core.keys import get as get_key
+        api_key = get_key("SCOPUS_API_KEY")
+        if not api_key:
+            logger.info("[Scopus] No API key — skipping. Add SCOPUS_API_KEY to .env")
+            return []
+
+        headers = self._headers()
+        if not headers:
+            return []
+
+        limiter = get_limiter(run_id)
+        limiter.wait(self.SOURCE_ID)
+
+        scopus_query = self._build_query(query)
+
+        # Use COMPLETE view if institutional token available, else STANDARD
+        from core.keys import get as get_key2
+        view = "COMPLETE" if get_key2("SCOPUS_INST_TOKEN") else "STANDARD"
+
+        params = {
+            "query":  scopus_query,
+            "count":  min(limit, 25),  # max 25 per request for full records
+            "field":  "title,creator,publicationName,coverDate,doi,description,"
+                      "citedby-count,subject-area,openaccess",
+            "sort":   "-relevancy",
+            "view":   view,
+        }
+
+        for attempt in range(3):
+            try:
+                resp = requests.get(self.BASE_URL, headers=headers,
+                                    params=params, timeout=20)
+                if resp.status_code == 401:
+                    logger.warning(
+                        "[Scopus] 401 Unauthorized — check SCOPUS_API_KEY. "
+                        "If off-campus, connect to your institution's VPN first."
+                    )
+                    return []
+                if resp.status_code == 403:
+                    logger.warning(
+                        "[Scopus] 403 Forbidden — institutional token may be "
+                        "required for this view. Try from campus or VPN."
+                    )
+                    return []
+                if resp.status_code == 429:
+                    limiter.backoff(self.SOURCE_ID, attempt, 429)
+                    continue
+                if resp.status_code >= 500:
+                    limiter.backoff(self.SOURCE_ID, attempt, resp.status_code)
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                break
+            except requests.exceptions.ConnectionError:
+                logger.warning("[Scopus] Connection error — are you on institutional network/VPN?")
+                return []
+            except Exception as e:
+                logger.warning(f"[Scopus] Error (attempt {attempt+1}): {e}")
+                if attempt == 2:
+                    return []
+        else:
+            return []
+
+        entries = data.get("search-results", {}).get("entry", [])
+        if not entries:
+            return []
+
+        results = []
+        for entry in entries:
+            # Skip error entries
+            if "error" in entry:
+                continue
+
+            # Authors — Scopus returns creator as string or list
+            creator = entry.get("dc:creator", "")
+            if isinstance(creator, list):
+                authors = creator[:5]
+            elif creator:
+                authors = [creator]
+            else:
+                authors = []
+
+            # Year from coverDate (YYYY-MM-DD or YYYY)
+            cover_date = entry.get("prism:coverDate", "")
+            year = int(cover_date[:4]) if cover_date and cover_date[:4].isdigit() else None
+
+            # Abstract — in 'description' field for STANDARD, fuller in COMPLETE
+            abstract = (entry.get("dc:description") or "")[:1000]
+
+            # DOI
+            doi = entry.get("prism:doi", "")
+
+            # Citation count — useful signal for Grounder (seminal weighting)
+            cited_by = entry.get("citedby-count", "")
+            try:
+                cited_by = int(cited_by) if cited_by else 0
+            except (ValueError, TypeError):
+                cited_by = 0
+
+            # Open access flag
+            oa = entry.get("openaccess", "0") == "1"
+
+            link = f"https://doi.org/{doi}" if doi else entry.get("prism:url", "")
+
+            results.append({
+                "title":         entry.get("dc:title", ""),
+                "authors":       authors,
+                "year":          year,
+                "source_name":   self.SOURCE_ID,
+                "doi":           doi,
+                "abstract":      abstract,
+                "active_link":   link,
+                "cited_by":      cited_by,
+                "open_access":   oa,
+                "journal":       entry.get("prism:publicationName", ""),
+            })
+
+        logger.info(f"[Scopus] '{scopus_query}' → {len(results)} results "
+                    f"(view={view}, cited_by available)")
+        return results
+
+
+# ---------------------------------------------------------------------------
+# Consensus — semantic search over 200M+ papers via MCP OAuth client
+# Uses the official MCP Python SDK with OAuth 2.1 Authorization Code + PKCE.
+# First call: opens browser for one-time login with your Consensus account.
+# Subsequent calls: tokens reused from db/consensus_tokens.json, auto-refreshed.
+# Requires: pip install mcp
+# Pro plan (20 results/search, 1000/month) uses the same credentials as the
+# MCP connection in Claude Desktop / Claude.ai.
+# ---------------------------------------------------------------------------
+
+class ConsensusHandler(SourceHandler):
+    SOURCE_ID = "consensus"
+
+    def search(self, query: str, keywords: list[str], limit: int = 10,
+               run_id: str = "") -> list[dict]:
+        try:
+            from core.consensus_mcp import search_consensus
+        except ImportError:
+            logger.warning(
+                "[Consensus] MCP client not available. "
+                "Install with: pip install mcp"
+            )
+            return []
+
+        limiter = get_limiter(run_id)
+        limiter.wait(self.SOURCE_ID)
+
+        try:
+            results = search_consensus(query, limit=limit)
+            logger.info(
+                f"[Consensus] '{query}' → {len(results)} results (MCP)"
+            )
+            return results
+        except Exception as e:
+            logger.warning(f"[Consensus] Search failed: {e}")
+            return []
+
+
+# ---------------------------------------------------------------------------
 # Source registry
 # ---------------------------------------------------------------------------
 
@@ -503,6 +730,8 @@ SOURCE_HANDLERS = {
     "philpapers":       PhilPapersHandler(),
     "philarchive":      PhilArchiveHandler(),
     "philsci":          PhilSciHandler(),
+    "scopus":           ScopusHandler(),
+    "consensus":        ConsensusHandler(),
 }
 
 
