@@ -140,6 +140,7 @@ python3 main.py keys    # see what is set and what is missing
 | `SEMANTIC_SCHOLAR_API_KEY` | Optional (free) | [semanticscholar.org/product/api](https://www.semanticscholar.org/product/api) |
 | `CORE_API_KEY` | Optional (free) | [core.ac.uk/services/api](https://core.ac.uk/services/api) |
 | `PHILPAPERS_API_ID` + `API_KEY` | Optional (free) | [philpapers.org/utils/create_api_user.html](https://philpapers.org/utils/create_api_user.html) |
+|`CONSENSUS_API` | Through MCP  | [Consensus mcp](https://consensus.app/home/mcp/)|
 | `GOOGLE_BOOKS_API_KEY` | Optional (free) | Google Cloud Console → Books API |
 
 ---
