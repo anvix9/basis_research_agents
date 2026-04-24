@@ -12,10 +12,9 @@ Give it a research question. It excavates the intellectual history, maps the gap
 
 This system helps in keeping control on the intellectual contribution while working on research questions. Not only that, it helps going deeper for fundamental research in AI, social social sciences and Medicines (working on it). It is built to give the researcher a deep understanding around a research question, not to provide him an automatic literature review. That is why the main artifact is an understanding_map which provides all the intellectual context around the question providing deep understanding.
 
+The final main artifact is an "understanding_map". See this <a href="https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260407-022355-242D_understanding_map.md">example</a>.
 <br/>
-The final main artifact is an "understanding_map", here is an [example](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260407-022355-242D_understanding_map.md)
-<br/>
-Also, for a blog-post alike, this is an example (From raw results): [post](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md)
+For a blog-post-style output from raw results, see this <a href="https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md">example</a>.
 
 10 specialised agents run in sequence, each building on the last. They pull from live academic APIs — not LLM training data — so every finding is traceable to a real, current source. The pipeline distinguishes between what a field has established, what it has tried and abandoned, where the genuine gaps are, and what is worth proposing next. At three points, it stops and hands control back to you.
 
