@@ -171,13 +171,6 @@ python3 main.py keys
 # Passive collection (suitable for cron)
 python3 main.py collect
 
-# Evaluation tools
-python3 eval_references.py --run RUN-XXXXXXXX
-python3 eval_claims.py --run RUN-XXXXXXXX
-
-# Export seminal papers for blog
-python3 export_seminal.py --list-runs
-python3 export_seminal.py --run RUN-XXXXXXXX --jekyll
 ```
 
 ---
