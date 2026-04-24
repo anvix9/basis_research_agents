@@ -4,7 +4,7 @@
 
 Give it a research question. It excavates the intellectual history, maps the gaps, proposes approaches, stress-tests their feasibility, synthesises a narrative, and delivers two final documents: a Research Brief and an Understanding Map. You stay in control through three mandatory human review breaks.
 
-**Current version: v10.4**
+**Current version: v1.0.0**
 
 ---
 
@@ -55,7 +55,7 @@ Resume after any break with `--resume`; the pipeline infers completion from data
 
 ---
 
-## What's new in v10.4
+## What's new in v1.0.0
 
 ### Consensus integration via MCP OAuth
 Consensus semantic search (200M+ peer-reviewed papers) is now available to agents via the official MCP Python SDK with OAuth 2.1 Authorization Code + PKCE. No API key required — you log in once with your Consensus account, and tokens are persisted in `db/consensus_tokens.json` and auto-refreshed. Valid search parameters: `query`, `year_min`, `year_max`, `study_types`, `sjr_max`, `human`, `sample_size_min`. Full OAuth flow documented in `OAuth_MCP_Auth_Diagram.docx`.
@@ -178,7 +178,7 @@ python3 export_seminal.py --run RUN-XXXXXXXX --jekyll
 
 ---
 
-## Known limitations — v10.4
+## Known limitations — v1.0.0
 
 - **Token cost on Consensus.** Consensus returns verbose plain text requiring regex parsing; it is gated behind `agent_sources` config and off by default for most agents.
 - **No automated cross-run synthesis.** Each run is self-contained; comparing insights across runs is manual.
