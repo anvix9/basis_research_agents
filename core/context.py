@@ -105,14 +105,9 @@ def for_historian(run_id: str, problem: str) -> str:
 
 
 def for_gaper(run_id: str, problem: str, break1_instructions: str = None) -> str:
-    """Context for Gaper — all prior outputs."""
-    seminal    = db.get_sources_by_type("seminal",    run_id)
-    historical = db.get_sources_by_type("historical", run_id)
-    social     = db.get_sources_by_type("current",    run_id)
-    ctx  = f"PROBLEM:\n{problem}"
-    ctx += _fmt("Seminal Works (Grounder)", _sources_summary(seminal))
-    ctx += _fmt("Historical Map (Historian)", _sources_summary(historical))
-    ctx += _fmt("Current Intelligence (Social)", _sources_summary(social))
+    """Context for Gaper — minimal. Gaper builds its own two-pass context
+    internally from the DB. We just pass the problem and break instructions."""
+    ctx = f"PROBLEM:\n{problem}"
     if break1_instructions:
         ctx += _fmt("Your Break 1 Instructions", break1_instructions)
     return ctx

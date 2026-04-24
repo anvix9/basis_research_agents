@@ -296,6 +296,57 @@
           "seed": "socialization",
           "expansion_depth": 1,
           "boundary_note": "stay within how individuals learn social norms"
+        },
+        {
+          "seed": "social structure"
+        },
+        {
+          "seed": "stratification"
+        },
+        {
+          "seed": "class"
+        },
+        {
+          "seed": "social mobility"
+        },
+        {
+          "seed": "urbanization"
+        },
+        {
+          "seed": "migration"
+        },
+        {
+          "seed": "globalization"
+        },
+        {
+          "seed": "institutional analysis"
+        },
+        {
+          "seed": "social capital"
+        },
+        {
+          "seed": "social reproduction"
+        },
+        {
+          "seed": "collective action"
+        },
+        {
+          "seed": "social movement"
+        },
+        {
+          "seed": "gender"
+        },
+        {
+          "seed": "race"
+        },
+        {
+          "seed": "intersectionality"
+        },
+        {
+          "seed": "modernization theory"
+        },
+        {
+          "seed": "world-systems"
         }
       ],
       "sources": [
@@ -326,6 +377,30 @@
           "seed": "cultural evolution",
           "expansion_depth": 1,
           "boundary_note": "stay within how cultures change"
+        },
+        {
+          "seed": "social anthropology"
+        },
+        {
+          "seed": "political anthropology"
+        },
+        {
+          "seed": "postcolonial theory"
+        },
+        {
+          "seed": "subaltern studies"
+        },
+        {
+          "seed": "globalization"
+        },
+        {
+          "seed": "transnationalism"
+        },
+        {
+          "seed": "indigenous knowledge"
+        },
+        {
+          "seed": "decolonial"
         }
       ],
       "sources": [
@@ -356,6 +431,60 @@
           "seed": "history of science",
           "expansion_depth": 1,
           "boundary_note": "stay within development of scientific knowledge"
+        },
+        {
+          "seed": "social history"
+        },
+        {
+          "seed": "economic history"
+        },
+        {
+          "seed": "political history"
+        },
+        {
+          "seed": "cultural history"
+        },
+        {
+          "seed": "colonial history"
+        },
+        {
+          "seed": "decolonization"
+        },
+        {
+          "seed": "modernization"
+        },
+        {
+          "seed": "revolution"
+        },
+        {
+          "seed": "reform"
+        },
+        {
+          "seed": "industrialization"
+        },
+        {
+          "seed": "state building"
+        },
+        {
+          "seed": "collective memory"
+        },
+        {
+          "seed": "periodization"
+        },
+        {
+          "seed": "longue dur\u00e9e"
+        },
+        {
+          "seed": "global history"
+        },
+        {
+          "seed": "postcolonial history"
+        },
+        {
+          "seed": "oral history"
+        },
+        {
+          "seed": "history of ideas"
         }
       ],
       "sources": [
@@ -387,6 +516,60 @@
           "seed": "governance",
           "expansion_depth": 1,
           "boundary_note": "stay within political institutions"
+        },
+        {
+          "seed": "state formation"
+        },
+        {
+          "seed": "political institution"
+        },
+        {
+          "seed": "authoritarianism"
+        },
+        {
+          "seed": "democratization"
+        },
+        {
+          "seed": "public policy"
+        },
+        {
+          "seed": "public administration"
+        },
+        {
+          "seed": "political participation"
+        },
+        {
+          "seed": "social movement"
+        },
+        {
+          "seed": "nationalism"
+        },
+        {
+          "seed": "populism"
+        },
+        {
+          "seed": "political economy"
+        },
+        {
+          "seed": "international relations"
+        },
+        {
+          "seed": "civil society"
+        },
+        {
+          "seed": "sovereignty"
+        },
+        {
+          "seed": "regime"
+        },
+        {
+          "seed": "political culture"
+        },
+        {
+          "seed": "class politics"
+        },
+        {
+          "seed": "geopolitics"
         }
       ],
       "sources": [
@@ -417,6 +600,42 @@
           "seed": "institutional economics",
           "expansion_depth": 1,
           "boundary_note": "stay within role of institutions"
+        },
+        {
+          "seed": "development economics"
+        },
+        {
+          "seed": "growth theory"
+        },
+        {
+          "seed": "trade"
+        },
+        {
+          "seed": "fiscal policy"
+        },
+        {
+          "seed": "monetary policy"
+        },
+        {
+          "seed": "inequality"
+        },
+        {
+          "seed": "redistribution"
+        },
+        {
+          "seed": "informal economy"
+        },
+        {
+          "seed": "neoliberalism"
+        },
+        {
+          "seed": "welfare economics"
+        },
+        {
+          "seed": "behavioral economics"
+        },
+        {
+          "seed": "public finance"
         }
       ],
       "sources": [
@@ -752,6 +971,42 @@
           "seed": "agrarian political economy",
           "expansion_depth": 1,
           "boundary_note": "stay within political economy of agriculture"
+        },
+        {
+          "seed": "human development"
+        },
+        {
+          "seed": "capability approach"
+        },
+        {
+          "seed": "global south"
+        },
+        {
+          "seed": "dependency theory"
+        },
+        {
+          "seed": "structural adjustment"
+        },
+        {
+          "seed": "poverty reduction"
+        },
+        {
+          "seed": "state capacity"
+        },
+        {
+          "seed": "institutional development"
+        },
+        {
+          "seed": "technology transfer"
+        },
+        {
+          "seed": "knowledge economy"
+        },
+        {
+          "seed": "social protection"
+        },
+        {
+          "seed": "SDGs"
         }
       ],
       "sources": [
@@ -759,6 +1014,93 @@
         "semantic_scholar",
         "core",
         "jstor",
+        "scopus",
+        "consensus"
+      ]
+    },
+    {
+      "theme_id": "medicine_clinical",
+      "label": "Clinical Medicine",
+      "keywords": [
+        {
+          "seed": "clinical medicine",
+          "expansion_depth": 1,
+          "boundary_note": "stay within clinical practice, diagnosis, and treatment"
+        },
+        {
+          "seed": "evidence-based medicine",
+          "expansion_depth": 1,
+          "boundary_note": "stay within clinical evidence and medical decision-making"
+        },
+        {
+          "seed": "clinical trial",
+          "expansion_depth": 1,
+          "boundary_note": "stay within medical research methodology and intervention studies"
+        }
+      ],
+      "sources": [
+        "pubmed",
+        "openalex",
+        "semantic_scholar",
+        "core",
+        "scopus",
+        "consensus"
+      ]
+    },
+    {
+      "theme_id": "public_health",
+      "label": "Public Health and Epidemiology",
+      "keywords": [
+        {
+          "seed": "public health",
+          "expansion_depth": 1,
+          "boundary_note": "stay within population health and prevention"
+        },
+        {
+          "seed": "epidemiology",
+          "expansion_depth": 1,
+          "boundary_note": "stay within disease distribution and determinants"
+        },
+        {
+          "seed": "global health",
+          "expansion_depth": 1,
+          "boundary_note": "stay within health across populations and nations"
+        }
+      ],
+      "sources": [
+        "pubmed",
+        "openalex",
+        "semantic_scholar",
+        "core",
+        "scopus",
+        "consensus"
+      ]
+    },
+    {
+      "theme_id": "biomedical_research",
+      "label": "Biomedical Research and Pharmacology",
+      "keywords": [
+        {
+          "seed": "pharmacology",
+          "expansion_depth": 1,
+          "boundary_note": "stay within drug action and therapeutics"
+        },
+        {
+          "seed": "translational medicine",
+          "expansion_depth": 1,
+          "boundary_note": "stay within bench-to-bedside research"
+        },
+        {
+          "seed": "molecular medicine",
+          "expansion_depth": 1,
+          "boundary_note": "stay within molecular basis of disease and therapy"
+        }
+      ],
+      "sources": [
+        "pubmed",
+        "openalex",
+        "semantic_scholar",
+        "core",
         "scopus",
         "consensus"
       ]
@@ -820,8 +1162,8 @@
     },
     "consensus": {
       "api_url": "https://api.consensus.app/v1/quick_search",
-      "enabled": true,
-      "_note": "Semantic search \u2014 works without key (3 results), free account (10 results), Pro (20 results). No IP restriction."
+      "enabled": false,
+      "_note": "Disabled by default \u2014 high token cost across all themes. Enable per-agent in agent_sources. Or test standalone: python3 core/consensus_mcp.py \"query\""
     },
     "philarchive": {
       "api_url": "https://philarchive.org/oai.pl",
@@ -840,5 +1182,36 @@
     }
   },
   "recheck_schedule": "twice_weekly",
-  "max_redirects": 3
+  "max_redirects": 3,
+  "agent_sources": {
+    "_description": "Controls which sources each agent uses. Remove a source from a list to disable it for that agent.",
+    "social": [
+      "openalex",
+      "arxiv",
+      "pubmed",
+      "semantic_scholar",
+      "core",
+      "philpapers",
+      "philarchive",
+      "philsci",
+      "scopus",
+      "consensus"
+    ],
+    "grounder": [
+      "openalex",
+      "semantic_scholar",
+      "consensus"
+    ],
+    "historian": [
+    "openalex",
+    "semantic_scholar",
+    "consensus"
+    ],
+    
+    "_notes": {
+      "social": "Primary discovery layer. consensus removed \u2014 high token cost per search across all themes.",
+      "grounder": "Seminal work search. consensus removed by default \u2014 add back if you want semantic search on sub-questions.",
+      "consensus_standalone": "Consensus is still available via: python3 core/consensus_mcp.py \"query\""
+    }
+  }
 }

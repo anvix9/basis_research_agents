@@ -1,24 +1,14 @@
 # Multi-Agent Research Intelligence Pipeline
 
-A locally-running multi-agent system for deep, interdisciplinary research with only 3 dependencies. Give it a research question, it excavates the intellectual history, maps the gaps, proposes approaches, evaluates their feasibility, synthesises a research narrative, and produces a final document. You stay in control through three mandatory review breaks.
-
-The system produces a clear and consice understanding map in which the user can grasp all the necessary knowledge given a problem. A clear artifact can be found here:
-[understanding_map](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260407-022355-242D_understanding_map.md)
-
-A derived but not the objective of the system is some research-briefs, or blog-posts alike products, one example is shared with the following: 
-[HERE](https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md)
+A locally-running multi-agent system for deep, interdisciplinary research. Give it a research question — it excavates the intellectual history, maps the gaps, proposes approaches, evaluates their feasibility, synthesises a research narrative, and produces a final document. You stay in control through three mandatory review breaks.
 
 ---
 
 ## What it does
 
-This is version **1.0.0**, and it is meant to improve over time.
+Most research tools search. This one thinks.
 
-The pipeline runs **10 specialized agents in sequence**, each building on the output of the previous one. It pulls information simultaneously from academic databases, book catalogs, and web search. The system distinguishes between what the field has firmly established, what has been tried and abandoned, where the real gaps are, and what might be worth proposing next. The design keeps a **human-in-the-loop**, with three review points where I can evaluate and redirect the process before the pipeline continues.
-
-I built this pipeline mostly for myself and for my own work and research. When you do research with AI, it is very easy to lose control of the information that appears — whether it should be trusted, how solid it is, or what its real motivation is. Since I mainly do fundamental research, I cannot afford to navigate with uncertain information, unclear motives, or spend my time simply verifying papers suggested by a model which most of the time can easily skip deeper contents.
-
-For that reason, I built this multi-agent system (10 agents for now) that maps, from my perspective, the cognitive tasks required to make an investigation rigorous. The diagram is shown below. I also implemented hard breaks where I manually review the major steps offline. This is the moment where I read, learn, and decide on the trajectory of the problem. Since the system tends to retrieve seminal works and major contributions, by the time I go through these breaks and read the material and analysis it finds, I usually have a clear understanding of the problem situation at hand, and only a few additional steps are needed afterward, to have a clear taste of the environment and current **real** gaps. In that way, I remain in control of the process and do not loose my intellectual contribution. 
+The pipeline runs 10 specialised agents in sequence, each building on the last. It pulls from academic databases, book catalogs, and web search simultaneously. It distinguishes between what the field has established, what it has tried and abandoned, where the real gaps are, and what is worth proposing next. A human-in-the-loop design means you review and redirect at three points before the pipeline continues.
 
 ```
 Social → [Break 0] → Grounder → Historian → Gaper
@@ -67,7 +57,6 @@ Three mandatory review breaks where the pipeline stops, produces a structured su
 | PhilPapers | Philosophy index | Optional (free) — skipped gracefully without key |
 | PhilArchive | Open access philosophy | None — OAI-PMH |
 | PhilSci-Archive | Philosophy of science | None — OAI-PMH |
-| Consensus | Academic Semantic Search | Optional via MCP (paid) |
 | **Google Books** | Books and monographs | Optional (free) — Grounder only |
 | **Open Library** | Books and monographs | None — Grounder only |
 | **Web search** | Broad coverage | Via Anthropic API — Grounder only |
@@ -76,7 +65,7 @@ Three mandatory review breaks where the pipeline stops, produces a structured su
 
 ## Semantic concept expansion
 
-Before searching, the pipeline translates your research question into its full conceptual territory using a local ConceptNet database (184MB, 2.29 million English edges). A three-layer process term extraction, ConceptNet neighbourhood, LLM synthesis, determines which of the 23 configured research themes to activate.
+Before searching, the pipeline translates your research question into its full conceptual territory using a local ConceptNet database (184MB, 2.29 million English edges). A three-layer process — term extraction, ConceptNet neighbourhood, LLM synthesis — determines which of the 23 configured research themes to activate.
 
 This means a question like *"What is the place of AI in human life?"* automatically activates philosophy of mind, anthropology, sociology, ethics, cognitive science, history, and law — without you having to specify them.
 
@@ -86,7 +75,7 @@ This means a question like *"What is the place of AI in human life?"* automatica
 
 The pipeline uses Claude as the primary model with automatic fallback:
 
-1. Claude Sonnet 4.5 (primary for all heavy reasoning agents)
+1. Claude Sonnet 4.5 (primary — all heavy reasoning agents)
 2. Claude Haiku 4.5 (lighter agents and fallback)
 3. Ollama `deepseek-r1:8b` (local fallback if Claude API unavailable)
 4. Ollama `llama3.2:3b` (final local fallback)
@@ -115,7 +104,7 @@ Prose formats (blog post, brief, memo) output `.md`. Academic formats (literatur
 ## Installation
 
 ```bash
-git clone https://github.com/anvix9/basis_research_agents
+git clone https://github.com/yourusername/pipeline
 cd pipeline
 pip install -r requirements.txt
 cp .env.example .env
@@ -140,7 +129,6 @@ python3 main.py keys    # see what is set and what is missing
 | `SEMANTIC_SCHOLAR_API_KEY` | Optional (free) | [semanticscholar.org/product/api](https://www.semanticscholar.org/product/api) |
 | `CORE_API_KEY` | Optional (free) | [core.ac.uk/services/api](https://core.ac.uk/services/api) |
 | `PHILPAPERS_API_ID` + `API_KEY` | Optional (free) | [philpapers.org/utils/create_api_user.html](https://philpapers.org/utils/create_api_user.html) |
-|`CONSENSUS_API` | Through MCP  | [Consensus mcp](https://consensus.app/home/mcp/)|
 | `GOOGLE_BOOKS_API_KEY` | Optional (free) | Google Cloud Console → Books API |
 
 ---
@@ -259,6 +247,12 @@ pipeline/
 - Anthropic API key with credits
 - OpenAlex API key (free, required since February 2026)
 - Optional: Ollama running locally for API-free fallback
+
+---
+
+## Technical documentation
+
+Full technical documentation — agent objectives, database schema with all columns, core module descriptions, setup instructions — is in [TECHNICAL.md](./TECHNICAL.md) (and as a Word document in the repository).
 
 ---
 

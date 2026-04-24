@@ -314,29 +314,138 @@ def _disciplines_to_themes(disciplines: list[str], config: dict) -> list[str]:
     config_theme_ids = {t["theme_id"] for t in config.get("themes", [])}
 
     # Explicit discipline → theme_id overrides (highest priority)
+    # Covers all 122 disciplines referenced in concept_map.json
     EXPLICIT_MAP = {
+        # Agriculture & environment
         "agriculture":              "agriculture_food_systems",
-        "development_studies":      "development_studies",
-        "political_economy":        "economics",
-        "political_ecology":        "environmental_studies",
         "ecology":                  "biology_life_sciences",
         "environmental_science":    "environmental_studies",
         "environmental_philosophy": "environmental_studies",
-        "geography":                "development_studies",
+        "environmental_ethics":     "environmental_studies",
+        "political_ecology":        "environmental_studies",
+        # Politics & governance
+        "political_philosophy":     "political_science",
         "public_policy":            "political_science",
+        "public_administration":    "political_science",
         "international_relations":  "political_science",
+        "political_economy":        "economics",
+        "political_science":        "political_science",
+        # Economics & labor
         "labor_studies":            "economics",
-        "media_studies":            "media_communication",
-        "communication_studies":    "media_communication",
-        "information_science":      "media_communication",
-        "journalism":               "media_communication",
-        "cultural_studies":         "anthropology",
         "behavioral_economics":     "economics",
+        "development_studies":      "development_studies",
+        # History
+        "historiography":           "history",
+        "intellectual_history":     "history",
+        "history_of_science":       "history",
+        "philosophy_of_history":    "history",
+        "memory_studies":           "history",
+        "area_studies":             "history",
+        # Sociology & social
+        "critical_theory":          "sociology",
+        "cultural_studies":         "anthropology",
+        "gender_studies":           "sociology",
+        "race_studies":             "sociology",
+        "postcolonial_studies":     "sociology",
+        "urban_studies":            "sociology",
+        "demography":               "sociology",
+        "sociology_of_knowledge":   "sociology",
+        "sociology_of_law":         "law",
+        "sociology_of_health":      "psychology",
+        "sociology_of_education":   "education_science",
+        "sociology_of_art":         "anthropology",
+        "criminology":              "sociology",
+        "queer_theory":             "sociology",
+        "feminist_theory":          "sociology",
+        "disability_studies":       "sociology",
+        # Psychology
         "social_psychology":        "psychology",
         "developmental_psychology": "psychology",
         "clinical_psychology":      "psychology",
         "evolutionary_psychology":  "psychology",
         "psychiatry":               "psychology",
+        "psychoanalysis":           "psychology",
+        "behavioral_science":       "psychology",
+        # Media & communication
+        "media_studies":            "media_communication",
+        "communication_studies":    "media_communication",
+        "information_science":      "media_communication",
+        "journalism":               "media_communication",
+        "film_studies":             "media_communication",
+        # Philosophy
+        "philosophy":               "philosophy_general",
+        "metaphysics":              "philosophy_general",
+        "epistemology":             "philosophy_general",
+        "phenomenology":            "philosophy_general",
+        "ethics":                   "ethics",
+        "applied_ethics":           "ethics",
+        "bioethics":                "ethics",
+        "metaethics":               "ethics",
+        "moral_philosophy":         "ethics",
+        "business_ethics":          "ethics",
+        "engineering_ethics":       "ethics",
+        "AI_ethics":                "ethics",
+        "philosophy_of_science":    "philosophy_general",
+        "philosophy_of_technology": "science_technology_studies",
+        "philosophy_of_education":  "education_science",
+        "philosophy_of_medicine":   "medicine_clinical",
+        "philosophy_of_biology":    "biology_life_sciences",
+        "philosophy_of_religion":   "religious_studies",
+        "philosophy_of_mathematics": "mathematics_logic",
+        # Sciences
+        "biology":                  "biology_life_sciences",
+        "evolutionary_biology":     "biology_life_sciences",
+        "genetics":                 "biomedical_research",
+        "biochemistry":             "biomedical_research",
+        "molecular_biology":        "biomedical_research",
+        "medicine":                 "medicine_clinical",
+        "clinical_psychology":      "medicine_clinical",
+        "psychiatry":               "medicine_clinical",
+        "nursing_science":          "medicine_clinical",
+        "health_informatics":       "medicine_clinical",
+        "epidemiology":             "public_health",
+        "public_health":            "public_health",
+        "sociology_of_health":      "public_health",
+        "health_policy":            "public_health",
+        "biostatistics":            "public_health",
+        "environmental_health":     "public_health",
+        "pharmacology":             "biomedical_research",
+        "medicinal_chemistry":      "biomedical_research",
+        "biomedical_research":      "biomedical_research",
+        "translational_medicine":   "biomedical_research",
+        "physics":                  "complexity_systems",
+        # Technology & computation
+        "AI":                       "artificial_intelligence",
+        "NLP":                      "artificial_intelligence",
+        "AI_law":                   "law",
+        "computer_science":         "artificial_intelligence",
+        "theoretical_computer_science": "mathematics_logic",
+        "human_computer_interaction": "science_technology_studies",
+        "educational_technology":   "education_science",
+        "cybernetics":              "complexity_systems",
+        "systems_theory":           "complexity_systems",
+        "complexity_science":       "complexity_systems",
+        # Other
+        "jurisprudence":            "law",
+        "comparative_religion":     "religious_studies",
+        "theology":                 "religious_studies",
+        "contemplative_studies":    "religious_studies",
+        "archaeology":              "anthropology",
+        "folklore":                 "anthropology",
+        "geography":                "development_studies",
+        "rhetoric":                 "philosophy_of_language",
+        "semiotics":                "linguistics",
+        "cognitive_linguistics":    "linguistics",
+        "literary_theory":          "philosophy_of_language",
+        "aesthetics":               "philosophy_general",
+        "art_history":              "anthropology",
+        "musicology":               "anthropology",
+        "architecture":             "science_technology_studies",
+        "statistics":               "mathematics_logic",
+        "logic":                    "mathematics_logic",
+        "foundations_of_mathematics": "mathematics_logic",
+        "mathematics":              "mathematics_logic",
+        "learning_sciences":        "education_science",
     }
 
     matched = set()
@@ -365,32 +474,49 @@ def _disciplines_to_themes(disciplines: list[str], config: dict) -> list[str]:
 SYNTHESIS_SYSTEM = """You are a disciplinary relevance filter for a research pipeline.
 
 Your job is NOT to brainstorm every possible connection.
-Your job is to identify the CORE disciplines that a researcher would genuinely search when studying this specific problem.
+Your job is to identify the CORE disciplines that a researcher would genuinely search when studying this specific problem, AND to prune disciplines that were activated by incidental keyword matches but are topically off-target.
 
-Rules:
-- Only include disciplines where a researcher would actually look for papers on THIS problem
-- Do NOT include disciplines just because they have a tangential connection
-- Do NOT add philosophy of mind, neuroscience, or psychology unless the problem is explicitly about cognition or mind
-- Do NOT add linguistics unless the problem is explicitly about language
-- Do NOT add religious studies unless the problem is explicitly about religion or spirituality
-- If the problem is about agriculture, sustainability, or rural development: include economics, sociology, environmental science, political science, development studies, geography — NOT philosophy of mind, NOT neuroscience
-- If unsure whether a discipline belongs: leave it out
+You will be shown:
+  - The research problem
+  - A candidate theme list already proposed by automated cluster matching
+  - The full set of themes available in the pipeline
 
-For each suggested theme, provide a specific one-line reason WHY a researcher studying this exact problem would search that discipline.
-If you cannot provide a specific concrete reason, do not include the theme.
+You must decide, for each candidate theme, whether a researcher working on THIS problem would genuinely search that discipline's literature. Remove the ones they would not.
+
+Rules for EXCLUSION (prune from candidates):
+- If the candidate theme was activated by an incidental word match (e.g. "evidence" activating epistemology, "existence" activating metaphysics, "university" activating education-psychology) and the actual problem is not about that discipline's subject matter, EXCLUDE it.
+- philosophy_of_mind, philosophy_of_language, philosophy_general, cognitive_science, psychology, neuroscience, linguistics, religious_studies, mathematics_logic — these should be EXCLUDED unless the problem is explicitly about cognition, mind, language-as-system, psychology, neural processes, linguistic theory, religion, or mathematical/logical foundations.
+- science_technology_studies — EXCLUDE unless the problem is explicitly about the social study of science, technology, or scientific practice.
+- media_communication — EXCLUDE unless the problem is about media, journalism, communication systems, or information platforms.
+- Be aggressive about exclusion. False positives from the static matcher are common; leaving irrelevant themes in poisons retrieval.
+
+Rules for INCLUSION (additions beyond candidates):
+- Only add a theme if the static matcher clearly missed something a researcher would definitely search.
+- Each addition must have a specific concrete reason tied to the actual problem, not generic language.
+- If unsure, do not add.
+
+Rules for REASONS:
+- Each exclusion and addition must have a reason of at least 20 characters naming WHY for this specific problem.
+- Generic reasons like "relevant" or "connected" are not acceptable.
 
 Output ONLY valid JSON:
 {
-  "disciplines_identified": ["only truly core disciplines for this specific problem"],
-  "bridge_concepts": ["key concepts connecting the core disciplines"],
-  "suggested_themes": [
+  "conceptual_translation": "1-2 sentences: what is this problem fundamentally about?",
+  "themes_to_exclude": [
     {
-      "theme_id": "snake_case_id matching config",
-      "label": "Human readable label",
-      "relevance_reason": "specific concrete reason why this theme is searched for THIS problem"
+      "theme_id": "snake_case_id from the candidate list",
+      "reason": "specific reason this discipline is NOT what a researcher on THIS problem would search"
     }
   ],
-  "conceptual_translation": "1-2 sentences: what is this problem fundamentally about?"
+  "themes_to_add": [
+    {
+      "theme_id": "snake_case_id matching an available theme",
+      "label": "Human readable label",
+      "relevance_reason": "specific concrete reason a researcher on THIS problem would search this discipline"
+    }
+  ],
+  "disciplines_identified": ["core disciplines actually relevant to this specific problem"],
+  "bridge_concepts": ["key concepts connecting the core disciplines"]
 }"""
 
 
@@ -401,13 +527,19 @@ def _llm_synthesis(
     activated_clusters: list[str],
     activated_disciplines: list[str],
     bridge_concepts: list[str],
+    candidate_themes: list[str],
     config: dict
 ) -> dict:
-    """LLM synthesis — catches what static map missed."""
+    """LLM synthesis — prunes false positives and catches what static map missed.
+
+    candidate_themes is the list of theme_ids that cluster matching proposes to
+    activate. The LLM is asked to exclude any of these that are topically off
+    for the specific problem, and to add any genuinely missing ones.
+    """
     config_themes = [{"theme_id": t["theme_id"], "label": t.get("label","")}
                      for t in config.get("themes", [])]
 
-    # Top expanded concepts by weight
+    # Top expanded concepts by weight (shown to LLM for semantic context)
     top_concepts = [c["concept"] for c in sorted(
         expanded_concepts, key=lambda x: x.get("weight", 0), reverse=True
     )[:30]]
@@ -416,23 +548,29 @@ def _llm_synthesis(
 
 Raw terms extracted: {', '.join(raw_terms[:15])}
 
-Conceptual clusters already activated by automated matching:
+Conceptual clusters activated by automated matching:
 {', '.join(activated_clusters)}
 
-These clusters map to these disciplines:
-{', '.join(sorted(set(activated_disciplines))[:20])}
+Candidate themes proposed for activation (derived from clusters above):
+{json.dumps(candidate_themes, indent=2)}
 
-Available themes in config:
+All themes available in the pipeline config:
 {json.dumps(config_themes, indent=2)}
 
-Task: Review the activated clusters and disciplines above.
-- Confirm which ones are genuinely relevant to this specific research problem
-- Add any important disciplines that are clearly missing from the activated clusters
-- Remove any disciplines that are clearly off-topic for this specific problem
-- Be conservative: when in doubt, leave a discipline OUT
+Task:
+1. Produce a conceptual translation of what this problem is fundamentally about.
+2. Review the CANDIDATE THEMES list above. For each candidate that a researcher
+   studying this specific problem would NOT actually search, list it under
+   "themes_to_exclude" with a specific reason. Be aggressive about exclusion —
+   the automated matcher over-activates on incidental word matches (e.g.
+   "evidence" -> epistemology -> philosophy_of_mind; "existence" -> metaphysics
+   -> philosophy_general).
+3. If there are themes in the available list that the candidates clearly miss
+   AND a researcher on this problem would genuinely search them, add them
+   under "themes_to_add" with a specific reason.
+4. Be conservative on additions and aggressive on exclusions.
 
-Do NOT add: philosophy of mind, neuroscience, psychology, linguistics, or religious studies
-unless the problem is explicitly about those topics."""
+Return ONLY the JSON object specified in the system instructions."""
 
     try:
         response = llm.call(prompt, SYNTHESIS_SYSTEM, agent_name="social")
@@ -441,10 +579,11 @@ unless the problem is explicitly about those topics."""
     except Exception as e:
         logger.warning(f"[ConceptMapper] LLM synthesis failed: {e}")
         return {
+            "conceptual_translation": "",
+            "themes_to_exclude": [],
+            "themes_to_add": [],
             "disciplines_identified": activated_clusters,
             "bridge_concepts": bridge_concepts,
-            "suggested_themes": [],
-            "conceptual_translation": "",
         }
 
 
@@ -516,18 +655,21 @@ def expand(problem: str, run_id: str, config: dict) -> dict:
             if c_lower in triggers:
                 ec["cluster_ids"].append(cluster["cluster_id"])
 
-    # Layer 3: LLM synthesis
-    llm_result = _llm_synthesis(
-        problem, raw_terms, expanded_concepts,
-        activated_clusters, activated_disciplines, bridge_concepts, config
+    # Map cluster disciplines to theme_ids FIRST, so the LLM can see the
+    # concrete candidate list it is being asked to prune.
+    cluster_themes = _disciplines_to_themes(activated_disciplines, config)
+    logger.info(
+        f"[ConceptMapper] Cluster matching proposes {len(cluster_themes)} candidate themes: "
+        f"{cluster_themes}"
     )
 
-    # Use LLM result to supplement clusters — not to override or expand arbitrarily
-    # Strategy: start from cluster-derived themes (already filtered by threshold)
-    # then add LLM-suggested themes only if they match config theme_ids
-    # and were explicitly suggested with a concrete reason
+    # Layer 3: LLM synthesis — prune incidental activations, add missed themes
+    llm_result = _llm_synthesis(
+        problem, raw_terms, expanded_concepts,
+        activated_clusters, activated_disciplines, bridge_concepts,
+        cluster_themes, config
+    )
 
-    # LLM-identified disciplines — only add if the cluster match missed something real
     llm_disciplines = llm_result.get("disciplines_identified", [])
     llm_bridges     = llm_result.get("bridge_concepts", [])
 
@@ -543,32 +685,46 @@ def expand(problem: str, run_id: str, config: dict) -> dict:
     ))
     all_bridges = list(set(bridge_concepts + llm_bridges))
 
-    # Map cluster disciplines to themes — these are the authoritative themes
-    cluster_themes = _disciplines_to_themes(activated_disciplines, config)
-
-    # LLM-suggested themes supplement cluster themes but are capped:
-    # - Must be explicitly in config
-    # - Must have a specific reason (not just "relevant")
-    # - Cannot add more than N themes beyond what clusters found
-    # This prevents LLM from re-introducing philosophy_of_mind on agro questions
     config_theme_ids = {t["theme_id"] for t in config.get("themes", [])}
-    MAX_LLM_ADDITIONS = max(2, len(cluster_themes) // 2)  # at most half again
 
+    # Apply LLM exclusions to cluster_themes.
+    # An exclusion is only honored if:
+    #   - the theme_id was actually a candidate
+    #   - the reason is substantive (>= 20 chars, not generic)
+    MIN_REASON_LEN = 20
+    excluded_themes = set()
+    exclusion_log = []
+    for x in llm_result.get("themes_to_exclude", []):
+        tid    = x.get("theme_id", "")
+        reason = (x.get("reason") or "").strip()
+        if tid in cluster_themes and len(reason) >= MIN_REASON_LEN:
+            excluded_themes.add(tid)
+            exclusion_log.append({"theme_id": tid, "reason": reason})
+    pruned_themes = [t for t in cluster_themes if t not in excluded_themes]
+
+    # Apply LLM additions, capped relative to the PRUNED candidate list so the
+    # LLM cannot compensate for aggressive exclusions by over-adding.
+    MAX_LLM_ADDITIONS = max(2, len(pruned_themes) // 2)
     llm_additions = []
-    for s in llm_result.get("suggested_themes", []):
+    addition_log = []
+    # Accept both the new "themes_to_add" field and the legacy "suggested_themes"
+    suggested = llm_result.get("themes_to_add") or llm_result.get("suggested_themes") or []
+    for s in suggested:
         if len(llm_additions) >= MAX_LLM_ADDITIONS:
             break
         tid    = s.get("theme_id", "")
-        reason = s.get("relevance_reason", "")
+        reason = (s.get("relevance_reason") or s.get("reason") or "").strip()
         if (tid in config_theme_ids
-                and tid not in cluster_themes
-                and len(reason) > 30):   # must be substantive reason
+                and tid not in pruned_themes
+                and tid not in excluded_themes
+                and len(reason) >= MIN_REASON_LEN):
             llm_additions.append(tid)
+            addition_log.append({"theme_id": tid, "reason": reason})
 
-    # Final list: cluster themes are primary, LLM supplements
+    # Final list: pruned cluster themes + LLM additions
     seen = set()
     final_themes = []
-    for t in cluster_themes + llm_additions:
+    for t in pruned_themes + llm_additions:
         if t not in seen:
             seen.add(t)
             final_themes.append(t)
@@ -578,6 +734,13 @@ def expand(problem: str, run_id: str, config: dict) -> dict:
         final_themes = [t["theme_id"] for t in config.get("themes", [])]
         logger.warning("[ConceptMapper] No themes matched — activating all themes")
 
+    logger.info(f"[ConceptMapper] Candidate themes (from clusters): {cluster_themes}")
+    if exclusion_log:
+        logger.info(f"[ConceptMapper] LLM excluded {len(exclusion_log)} themes: "
+                    f"{[e['theme_id'] for e in exclusion_log]}")
+    if addition_log:
+        logger.info(f"[ConceptMapper] LLM added {len(addition_log)} themes: "
+                    f"{[a['theme_id'] for a in addition_log]}")
     logger.info(f"[ConceptMapper] Final themes activated: {final_themes}")
 
     result = {
@@ -586,9 +749,13 @@ def expand(problem: str, run_id: str, config: dict) -> dict:
         "activated_clusters":   activated_clusters,
         "activated_disciplines": all_disciplines,
         "bridge_concepts":      all_bridges,
+        "candidate_themes":     cluster_themes,
+        "excluded_themes":      exclusion_log,
+        "added_themes":         addition_log,
         "final_themes":         final_themes,
         "llm_reasoning":        llm_result.get("conceptual_translation", ""),
-        "llm_suggested_themes": llm_result.get("suggested_themes", [])
+        "llm_suggested_themes": llm_result.get("themes_to_add")
+                                 or llm_result.get("suggested_themes", [])
     }
 
     # Save to database
