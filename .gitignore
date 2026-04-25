@@ -1,14 +1,37 @@
-# Python-generated files
+# Python
 __pycache__/
-*.py[oc]
+*.py[cod]
+*.egg-info/
 build/
 dist/
-wheels/
-*.egg-info
-db/*.db
+*.egg
+.venv/
+venv/
+env/
 
-# Virtual environments
+# Databases (user-generated — the compressed template is tracked)
+db/pipeline.db
+db/conceptnet.db
+db/consensus_tokens.json
+
+# Credentials
 .env
-
-#API
 API.txt
+
+# Runtime artifacts (user-generated per run)
+artifacts/*
+!artifacts/.gitkeep
+logs/*
+!logs/.gitkeep
+exports/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

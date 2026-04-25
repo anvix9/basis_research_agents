@@ -511,7 +511,7 @@ def verify_online(manifest: list[CitableSource],
     Verify each source exists online. Mutates manifest in place.
     Order: Crossref (if DOI) → OpenAlex by title → URL HEAD.
     """
-    headers = {"User-Agent": "ARANEA/10.5 (mailto:research@example.org)"}
+    headers = {"User-Agent": "SEEKER/10.5 (mailto:research@example.org)"}
     with httpx.Client(headers=headers) as client:
         for src in manifest:
             if use_cache:
@@ -586,7 +586,7 @@ def render_references_tex(cited: list[CitableSource]) -> str:
         return "% No citations in this document.\n"
     cited_sorted = sorted(cited, key=lambda s: s.cite_key.lower())
     lines = [
-        "% References exported from ARANEA Understanding Map",
+        "% References exported from SEEKER Understanding Map",
         "% Drop inside \\begin{thebibliography}{...} ... \\end{thebibliography}",
         "",
     ]

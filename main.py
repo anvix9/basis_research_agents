@@ -3,7 +3,9 @@ Pipeline Runner
 ---------------
 Main entry point. Orchestrates the full pipeline:
 
-  Social feed → Break 0 → Grounder → Historian → Gaper
+  Concept Mapper → Break 0 (theme confirmation)
+  → Grounder (builds argument tree) → Social (contemporary + bridges)
+  → Historian (audit + external factors) → Gaper (tree-native gap mapping)
   → Break 1 → Vision → Theorist → Rude → Synthesizer
   → Break 2 → Thinker → Scribe
 
@@ -40,6 +42,7 @@ from core.context   import (
 )
 from agents.social  import feed as social_feed, collect as social_collect
 from agents.social  import produce_intelligence_package, recheck_links
+from agents.social  import run as social_run
 from core.concept_mapper import expand as concept_expand, print_expansion_report
 
 
@@ -58,8 +61,10 @@ def _import_agents():
     from agents.synthesizer import run as run_synthesizer
     from agents.thinker     import run as run_thinker
     from agents.scribe      import run as run_scribe
+    from agents.social import run as run_social
     return {
         "grounder":    run_grounder,
+        "social":      run_social,
         "historian":   run_historian,
         "gaper":       run_gaper,
         "vision":      run_vision,
@@ -140,7 +145,7 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
     run = db.get_run(run_id)
 
     # -----------------------------------------------------------------------
-    # SOCIAL FEED + BREAK 0
+    # CONCEPT MAPPER + BREAK 0 (theme selection + confirmation)
     # -----------------------------------------------------------------------
 
     if not run.get("break0_done"):
@@ -149,7 +154,6 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
         try:
             expansion = concept_expand(problem, run_id, config)
             print_expansion_report(expansion)
-            # Override selected themes with concept mapper results
             activated_theme_ids = expansion["final_themes"]
             selected_themes = [t for t in config.get("themes", [])
                                if t["theme_id"] in activated_theme_ids]
@@ -164,20 +168,7 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
             excluded_themes = []
             expansion = None
 
-        print("\n▶  SOCIAL — Targeted intelligence pull...")
-        try:
-            selected_themes, excluded_themes = social_feed(problem, run_id, config,
-                                                           selected_themes=selected_themes)
-            intel_pkg = produce_intelligence_package(run_id, selected_themes, problem)
-            logger.info(f"Social feed complete — {len(selected_themes)} themes selected")
-            print(f"  ✓  Social feed complete — {len(selected_themes)} themes selected")
-        except Exception as e:
-            logger.error(f"Social feed failed: {e}", exc_info=True)
-            print(f"  ✗  Social feed failed: {e}")
-            selected_themes, excluded_themes = [], []
-            intel_pkg = f"Problem: {problem}\n\nNo Social intelligence available."
-
-        # Break 0
+        # Break 0 — human confirms/adjusts themes before any search begins
         break0_instructions = breaks.break0(
             run_id, problem, selected_themes, excluded_themes
         )
@@ -187,22 +178,34 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
         break0_instructions = "CONFIRMED"
         selected_themes = config.get("themes", [])
 
-    # -----------------------------------------------------------------------
-    # GROUNDER
-    # -----------------------------------------------------------------------
-
     agents = _import_agents()
+
+    # -----------------------------------------------------------------------
+    # GROUNDER (builds argument tree)
+    # -----------------------------------------------------------------------
 
     if _agent_done(run_id, "grounder"):
         print("  ↩  Grounder already completed — skipping")
     else:
-        grounder_ctx = for_grounder(run_id, problem, db.get_sources_by_type("current", run_id))
+        grounder_ctx = for_grounder(run_id, problem, [])
         if not _run_step("Grounder", agents["grounder"], grounder_ctx, run_id):
             _abort(run_id, "Grounder")
             return
 
     # -----------------------------------------------------------------------
-    # HISTORIAN
+    # SOCIAL (contemporary + bridge papers — reads tree from Grounder)
+    # -----------------------------------------------------------------------
+
+    if _agent_done(run_id, "social"):
+        print("  ↩  Social already completed — skipping")
+    else:
+        social_ctx = f"PROBLEM:\n{problem}"
+        if not _run_step("Social", agents["social"], social_ctx, run_id,
+                         extra={"config": config, "selected_themes": selected_themes}):
+            logger.warning("Social failed — continuing (non-fatal)")
+
+    # -----------------------------------------------------------------------
+    # HISTORIAN (audit tree + historical search + external factors)
     # -----------------------------------------------------------------------
 
     if _agent_done(run_id, "historian"):
@@ -214,7 +217,7 @@ def run_pipeline(problem: str, run_id: str = None, resume: bool = False):
             return
 
     # -----------------------------------------------------------------------
-    # GAPER
+    # GAPER (tree-native gap mapping)
     # -----------------------------------------------------------------------
 
     if _agent_done(run_id, "gaper"):
@@ -401,6 +404,7 @@ def _agent_done(run_id: str, agent: str) -> bool:
     """
     checks = {
         "grounder":    lambda: bool(db.get_sources_by_type("seminal",    run_id)),
+        "social":      lambda: bool(db.get_sources_by_type("current",    run_id)),
         "historian":   lambda: bool(db.get_sources_by_type("historical", run_id)),
         "gaper":       lambda: bool(db.get_gaps(run_id)),
         "vision":      lambda: bool(db.get_implications(run_id)),

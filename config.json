@@ -1162,7 +1162,7 @@
     },
     "consensus": {
       "api_url": "https://api.consensus.app/v1/quick_search",
-      "enabled": false,
+      "enabled": true,
       "_note": "Disabled by default \u2014 high token cost across all themes. Enable per-agent in agent_sources. Or test standalone: python3 core/consensus_mcp.py \"query\""
     },
     "philarchive": {

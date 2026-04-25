@@ -1,4 +1,14 @@
+# Core LLM
 anthropic>=0.40.0
+
+# HTTP & APIs
 requests>=2.31.0
+
+# Academic source handlers
 arxiv>=2.1.0
-mcp
+
+# Consensus MCP (optional — for OAuth MCP integration)
+mcp>=1.20.0
+
+# ConceptNet import tool
+# (no extra deps — uses stdlib sqlite3)

@@ -1134,3 +1134,106 @@ def produce_intelligence_package(run_id: str, selected_themes: list, problem: st
                 lines.append("")
 
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Tree-aware run function (called after Grounder)
+# ---------------------------------------------------------------------------
+
+def run(context: str, run_id: str, **kwargs):
+    """
+    Social agent run — called after Grounder in the pipeline.
+    1. Normal theme-based feed (existing logic)
+    2. Read argument tree → find bridge needs
+    3. Search for bridge papers → add to tree
+    """
+    import json
+    from core.argument_tree import TreeBuilder
+
+    problem = ""
+    if "PROBLEM:" in context:
+        problem = context.split("PROBLEM:")[1].split("\n\n")[0].strip()
+
+    config = kwargs.get("config") or load_config()
+    selected_themes = kwargs.get("selected_themes")
+
+    # Step 1: Normal feed
+    print("  [Social] Step 1 — theme-based source collection...")
+    selected, excluded = feed(problem, run_id, config, selected_themes)
+
+    # Step 2: Read tree and find bridge needs
+    print("  [Social] Step 2 — reading argument tree for bridge needs...")
+    tree = TreeBuilder(run_id)
+    bridge_needs = tree.find_bridge_needs(min_gap_years=15)
+
+    if not bridge_needs:
+        print("  [Social] No temporal bridge gaps detected in tree")
+        tree.close()
+        logger.info("[Social] Complete (no bridges needed)")
+        return
+
+    print(f"  [Social] {len(bridge_needs)} bridge gaps detected")
+
+    # Step 3: Search for bridge papers
+    # For each gap, search for papers in the gap period
+    agent_allowed = config.get("agent_sources", {}).get("social", None)
+    bridges_added = 0
+
+    for need in bridge_needs[:10]:  # limit to 10 bridge searches
+        gap_years = need['gap_years']
+        question = need['question'][:80]
+        y1 = need['earlier_year']
+        y2 = need['later_year']
+        mid_year = (y1 + y2) // 2
+
+        # Build bridge query from the question context
+        query_words = [w for w in question.lower().split()
+                       if len(w) > 3 and w not in
+                       {"what", "does", "have", "that", "this", "with", "from", "how"}]
+        bridge_query = " ".join(query_words[:4])
+
+        if not bridge_query:
+            continue
+
+        print(f"    Searching bridge: '{bridge_query}' ({y1}-{y2})...")
+
+        # Search OpenAlex for papers in the gap period
+        results = []
+        if not agent_allowed or "openalex" in agent_allowed:
+            handler = SOURCE_HANDLERS.get("openalex")
+            if handler:
+                try:
+                    from core.rate_limiter import get_limiter
+                    limiter = get_limiter(run_id)
+                    limiter.wait("openalex")
+                    raw = handler().search(bridge_query, [], limit=5, run_id=run_id)
+                    # Filter to gap period
+                    results = [r for r in raw
+                               if r.get("year") and y1 < r["year"] < y2][:3]
+                except Exception as e:
+                    logger.warning(f"[Social] Bridge search failed: {e}")
+
+        for r in results:
+            # Save to DB as current source
+            source_id = generate_id("CUR")
+            r["source_id"] = source_id
+            r["run_id"] = run_id
+            r["type"] = "current"
+            r["relevance_rating"] = "Medium"
+            r["relevance_reason"] = f"Bridge paper ({y1}-{y2})"
+            db.upsert_source(r)
+
+            # Add bridge node to tree
+            tree.add_bridge(
+                need['earlier_node'],
+                need['later_node'],
+                source_id,
+                bridge_type="temporal",
+                description=f"[{r.get('year','')}] {r.get('title','')[:100]}",
+                agent="social",
+            )
+            bridges_added += 1
+
+    tree.close()
+    print(f"  [Social] {bridges_added} bridge papers added to tree")
+    logger.info(f"[Social] Complete — {bridges_added} bridges added")

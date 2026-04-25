@@ -112,10 +112,77 @@ def run(context: str, run_id: str, **kwargs):
     if "PROBLEM:" in context:
         problem = context.split("PROBLEM:")[1].split("\n\n")[0].strip()
 
+    # ── Job 1: Tree Audit ─────────────────────────────────────────────────
+    from core.argument_tree import TreeBuilder
+    tree = TreeBuilder(run_id)
+    stats = tree.get_stats()
+
+    if stats.get("total_nodes", 0) > 0:
+        print("  [Historian] Job 1 — auditing argument tree...")
+        gaps = tree.find_gaps()
+        claims = tree.get_nodes_by_type("claim")
+
+        # Assess each claim's solidity
+        audited = 0
+        for claim in claims:
+            children = tree.get_children(claim["node_id"])
+            evidence_nodes = [c for c in children if c["node_type"] == "evidence"]
+            counter_nodes = [c for c in children if c["node_type"] == "counter"]
+
+            if len(evidence_nodes) >= 2 and not counter_nodes:
+                tree.add_audit_note(
+                    claim["node_id"],
+                    f"Well-supported: {len(evidence_nodes)} evidence nodes, no counter-arguments",
+                    new_status="solid", new_confidence=0.85,
+                    agent="historian",
+                )
+            elif counter_nodes:
+                tree.add_audit_note(
+                    claim["node_id"],
+                    f"Contested: {len(evidence_nodes)} evidence, {len(counter_nodes)} counter-arguments",
+                    new_status="contested",
+                    agent="historian",
+                )
+            elif len(evidence_nodes) == 1:
+                tree.add_audit_note(
+                    claim["node_id"],
+                    "Single evidence source — needs corroboration",
+                    new_status="weak", new_confidence=0.4,
+                    agent="historian",
+                )
+            else:
+                tree.add_audit_note(
+                    claim["node_id"],
+                    "No evidence found — unsupported",
+                    new_status="unsupported", new_confidence=0.1,
+                    agent="historian",
+                )
+            audited += 1
+
+        unanswered = len([g for g in gaps if g["gap_type"] == "unanswered_question"])
+        unsupported = len([g for g in gaps if g["gap_type"] == "unsupported_claim"])
+        weak_claims = len([g for g in gaps if g["gap_type"] == "weak_claim"])
+
+        print(f"  [Historian] Audit: {audited} claims assessed | "
+              f"{unanswered} unanswered questions | {unsupported} unsupported claims | "
+              f"{weak_claims} weak claims")
+    else:
+        print("  [Historian] No tree found — skipping audit")
+
+    # ── Job 2: Historical search (existing logic) ──────────────────────────
+    print("  [Historian] Job 2 — building historical map...")
+
+    # Enrich context with tree summary for better historical search
+    enriched_context = context
+    if stats.get("total_nodes", 0) > 0:
+        tree_ctx = tree.to_context(max_depth=2, include_evidence=False)
+        enriched_context += f"\n\n=== ARGUMENT TREE (for historical context) ===\n{tree_ctx}"
+
     try:
-        response = llm.call(context, SYSTEM_PROMPT, agent_name="historian")
+        response = llm.call(enriched_context, SYSTEM_PROMPT, agent_name="historian")
     except Exception as e:
         logger.error(f"[Historian] LLM call failed: {e}")
+        tree.close()
         raise
 
     try:
@@ -127,14 +194,16 @@ def run(context: str, run_id: str, **kwargs):
                 "dead_ends": [], "recurring_patterns": [],
                 "methods_evolution": response[:2000], "trajectory_vs_current": ""}
 
-    # Save historical works
+    # Save historical works to DB
     saved = 0
+    source_id_map = {}  # title → source_id for tree linkage
     for work in data.get("historical_works", []):
         if not work.get("title"):
             continue
         link_status = _verify_link(work.get("active_link", ""))
+        source_id = generate_id("HIST")
         ok = db.upsert_source({
-            "source_id":          generate_id("HIST"),
+            "source_id":          source_id,
             "title":              work.get("title", ""),
             "authors":            work.get("authors", []),
             "year":               work.get("year"),
@@ -155,9 +224,56 @@ def run(context: str, run_id: str, **kwargs):
         })
         if ok:
             saved += 1
+            source_id_map[work.get("title", "")] = source_id
         time.sleep(0.1)
 
-    # Save historical map document
+    # ── Job 3: Extend tree with historical + external nodes ────────────────
+    if stats.get("total_nodes", 0) > 0:
+        print("  [Historian] Job 3 — extending tree with historical context...")
+
+        # Add historical works to tree
+        questions = tree.get_nodes_by_type("question")
+        root_node = tree.get_nodes_by_type("root")
+        parent_for_hist = root_node[0]["node_id"] if root_node else None
+
+        for work in data.get("historical_works", []):
+            title = work.get("title", "")
+            sid = source_id_map.get(title, "")
+            if parent_for_hist:
+                tree.add_historical(
+                    parent_for_hist,
+                    f"[{work.get('year','?')}] {title} — {work.get('historical_reason','')}",
+                    year=work.get("year"),
+                    source_id=sid,
+                    agent="historian",
+                )
+
+        # Add external factors from dead ends and phase transitions
+        for phase in data.get("phases", []):
+            driver = phase.get("transition_driver", "")
+            if driver and parent_for_hist:
+                tree.add_external(
+                    parent_for_hist,
+                    f"Phase transition: {phase.get('name','')} — {driver}",
+                    factor_type="institutional",
+                    agent="historian",
+                )
+
+        for dead_end in data.get("dead_ends", []):
+            if parent_for_hist:
+                tree.add_external(
+                    parent_for_hist,
+                    f"Dead end: {dead_end.get('approach','')} — {dead_end.get('failure_reason','')}",
+                    factor_type="institutional",
+                    agent="historian",
+                )
+
+        final_stats = tree.get_stats()
+        print(f"  [Historian] Tree extended: {final_stats['total_nodes']} nodes total")
+
+    tree.close()
+
+    # Save document
     _save_doc(run_id, problem, data)
 
     print(f"  [Historian] {saved} historical works saved | "

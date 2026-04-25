@@ -268,6 +268,9 @@ def init_db():
     """Initialize database — create all tables if they don't exist."""
     with get_connection() as conn:
         conn.executescript(SCHEMA)
+    # Initialize argument tree table
+    from core.argument_tree import init_tree_table
+    init_tree_table()
     logger.info(f"Database initialized at {DB_PATH}")
 
 

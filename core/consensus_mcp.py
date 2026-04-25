@@ -150,7 +150,7 @@ async def _ensure_registered(storage: FileTokenStorage) -> None:
 
     payload = {
         "redirect_uris":              [REDIRECT_URI],
-        "client_name":                "ARANEA Research Pipeline",
+        "client_name":                "SEEKER Research Pipeline",
         "grant_types":                ["authorization_code", "refresh_token"],
         "response_types":             ["code"],
         "token_endpoint_auth_method": "none",
@@ -182,7 +182,7 @@ async def _ensure_registered(storage: FileTokenStorage) -> None:
         grant_types=["authorization_code", "refresh_token"],
         response_types=["code"],
         token_endpoint_auth_method="none",
-        client_name="ARANEA Research Pipeline",
+        client_name="SEEKER Research Pipeline",
     )
     await storage.set_client_info(client_info)
     logger.info("[Consensus] Registered. client_id=%s", client_id)
@@ -278,7 +278,7 @@ async def _async_search(
 
     client_metadata = OAuthClientMetadata(
         redirect_uris=[REDIRECT_URI],
-        client_name="ARANEA Research Pipeline",
+        client_name="SEEKER Research Pipeline",
         grant_types=["authorization_code", "refresh_token"],
         response_types=["code"],
         token_endpoint_auth_method="none",

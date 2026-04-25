@@ -1,182 +1,305 @@
-# SEEKER
+# SEEKER — Multi-Agent Deep Research Intelligence Pipeline
 
-**A multi-agent research intelligence pipeline for deep, traceable academic work.**
+**SEEKER** is a 10-agent research pipeline that conducts deep, traceable academic research by orchestrating specialized agents across live data sources. It builds a persistent **argument tree** where every claim traces to verifiable evidence — papers, books, legal documents, news articles, court decisions, testimony, or archival records.
 
-Give it a research question. It excavates the intellectual history, maps the gaps, proposes approaches, stress-tests their feasibility, synthesises a narrative, and delivers two final documents: a Research Brief and an Understanding Map. You stay in control through three mandatory human review breaks.
+The system is designed to preserve the researcher's intellectual contribution. It does not write your paper. It maps the intellectual territory so you can navigate it yourself.
 
-**Current version: v1.0.0**
-
----
-
-## What it does
-
-This system helps in keeping control on the intellectual contribution while working on research questions. Not only that, it helps going deeper for fundamental research in AI, social social sciences and Medicines (working on it). It is built to give the researcher a deep understanding around a research question, not to provide him an automatic literature review. That is why the main artifact is an understanding_map which provides all the intellectual context around the question providing deep understanding.
-
-The final main artifact is an "understanding_map". See this <a href="https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260407-022355-242D_understanding_map.md">example</a>.
-<br/>
-For a blog-post-style output from raw results, see this <a href="https://github.com/anvix9/basis_research_agents/blob/main/artifacts/RUN-20260331-152508-D296_blog_post.md">example</a>.
-
-10 specialised agents run in sequence, each building on the last. They pull from live academic APIs, so every finding is traceable to a real, current source with a with persistent SQLite database. The pipeline distinguishes between what a field has established, what it has tried and abandoned, where the genuine gaps are, and what is worth proposing next. At three points, it stops and hands control back to you.
-
----
-
-## Pipeline at a glance
+## How It Works
 
 ```
-    ┌─────────────────────────────────────────────────────────────┐
-    │  Social → [Break 0] → Grounder → Historian → Gaper →        │
-    │  [Break 1] → Vision → Theorist → Rude → Synthesizer →       │
-    │  [Break 2] → Thinker → Scribe                               │
-    └─────────────────────────────────────────────────────────────┘
+Concept Mapper → Break 0 (you confirm themes)
+  → Grounder (decomposes problem → searches → builds argument tree)
+  → Social (contemporary + bridge papers → extends tree)
+  → Historian (audits tree → historical search → external factors)
+  → Gaper (structural + analytical gap mapping from tree)
+  → Break 1 (you review foundations and gaps)
+  → Vision (logical implications)
+  → Theorist (research proposals)
+  → Rude (feasibility evaluation — adversarial)
+  → Synthesizer (research narrative)
+  → Break 2 (you set trajectory)
+  → Thinker (new directions)
+  → Scribe (understanding map + outputs)
 ```
 
-| Agent | Role |
-|---|---|
-| **Social** | Passive collection across live data sources; seeds the run database |
-| **Grounder** | Identifies seminal works and intellectual origins of the question |
-| **Historian** | Traces chronology, dead ends, abandoned paradigms (dead-end doctrine) |
-| **Gaper** | Maps genuine gaps — what the field has *not* answered |
-| **Vision** | Extracts strong implications from the accumulated foundation |
-| **Theorist** | Proposes approaches; two-pass design with elevated token ceiling (16k) |
-| **Rude** | Stress-tests each proposal; finds weakest links |
-| **Synthesizer** | Narrates coherence; sharpens the question; maps tensions |
-| **Thinker** | Opens genuinely new directions beyond the existing proposals |
-| **Scribe** | Produces final outputs: Research Brief + Understanding Map |
+**Three human-in-the-loop breaks** where you read, learn, and decide the trajectory. The pipeline stops and waits for your input.
 
----
+**The Argument Tree** is the backbone. Every agent reads and extends it. Claims without evidence are flagged. Temporal gaps are detected and bridge papers are searched automatically. The Historian audits the tree for solidity before downstream agents use it.
 
-## The three breaks - human-in-the-loop supervision
+## Quick Start
 
-Unlike autonomous agentic systems, SEEKER has three forced stops where the pipeline waits for your instructions before continuing.
-
-| Break | What you receive | What you decide |
-|---|---|---|
-| **Break 0** | Social collection summary | Confirm or redirect the source pool |
-| **Break 1** | Foundation review (seminal + historical + gaps) | Validate trajectory; upload instructions for Phase 2 |
-| **Break 2** | Analysis review (implications + proposals + evaluations + synthesis) | Approve coherence; specify final artefact format |
-
-Resume after any break with `--resume`; the pipeline infers completion from data presence in each agent's output table and skips work that is already done.
-
----
-
-## What's new in v1.0.0
-
-### Consensus integration via MCP OAuth
-Consensus semantic search (200M+ peer-reviewed papers) is now available to agents via the official MCP Python SDK with OAuth 2.1 Authorization Code + PKCE. No API key required — you log in once with your Consensus account, and tokens are persisted in `db/consensus_tokens.json` and auto-refreshed. Full OAuth flow documented in `OAuth_MCP_Auth_Diagram.docx`.
-
-### Per-agent source control
-New `agent_sources` block in `config.json` lets you control which sources each agent can query. Social and Grounder read their allowed sources from config, not from hardcoded lists. Consensus is disabled by default for token-cost reasons; enable it per-agent as needed.
-
-### Resume from any break
-`python3 main.py run --problem "..." --run-id RUN-XXXXXXXX --resume` picks up where a crash or cancellation left off. The `_agent_done()` helper checks for data presence in each agent's output table and skips completed work. Break 2 instructions are recovered from `_break2_review.md` so downstream agents get your real guidance, not a generic fallback.
-
-### Understanding Map — mandatory Scribe output
-Every run now produces a second artefact alongside the Research Brief: a six-section **Understanding Map** designed for the researcher to actually learn the field, not just receive a report.
-
-1. **Territory at a Glance** — what the field looks like
-2. **Intellectual Genealogy** — who built on whom
-3. **Reading Curriculum** — three tiers (Foundational / Developmental / Contemporary) with active reading prompts for each paper
-4. **Conceptual Map** — how the key concepts relate
-5. **Unresolved Core** — what the field has not settled
-6. **Self-Assessment** — 8 Socratic questions with answers
-
-### Vision robustness
-Vision's token ceiling raised to 12,000. A new `_salvage_truncated_json()` brace-counting parser recovers complete implications if the model is cut off mid-output. Strong implications are now instructed to stream first so the most important content always survives truncation.
-
-### Break 2 truncation
-Field-length caps applied per field (narrative 1500, trajectory 800, tensions 600, verdict reason 400, weakest link 200, proposal 300 chars) with `...[truncated — full text in DB]` markers. Full text is always preserved in SQLite.
-
-### Evaluation and publishing tools
-- `eval_references.py` — scores reference quality across a run
-- `eval_claims.py` — audits claim-to-source attribution
-- `export_seminal.py` — exports seminal papers grouped by category for blog publication. Outputs JSON (Jekyll `_data/` compatible), CSV, and optional per-paper Jekyll Markdown posts. Supports `--list-runs` and `--run` flags.
-
----
-
-## Live data sources
-
-Agents retrieve from live APIs, not LLM training data. This is a core architectural principle.
-
-| Source | Coverage | Auth |
-|---|---|---|
-| OpenAlex | 250M+ works across all disciplines | API key (free) |
-| Semantic Scholar | 200M+ papers with citation graph | API key recommended |
-| Consensus | 200M+ peer-reviewed papers, semantic search | MCP OAuth (one-time browser login) |
-| arXiv | Physics, CS, math, quantitative bio | None |
-| CORE | 300M+ open-access papers | API key (free) |
-| PhilPapers | Philosophy | None |
-| NCBI / PubMed | Biomedical literature | Email (courtesy) |
-| Google Books | Book-length works | API key |
-| Open Library | Book metadata | None |
-
----
-
-## LLM routing
-
-Primary: **Claude** (Haiku and Sonnet via Anthropic API).
-Fallback: **Ollama** (local; qwen2.5 and similar).
-
-The router selects per-agent based on reasoning depth needed. Elevated token ceilings: Theorist and Synthesizer 16,000, Vision 12,000, remaining agents default.
-
----
-
-## Persistence
-
-SQLite at `db/pipeline.db`, 11-table schema. Every source, implication, proposal, evaluation, synthesis field, direction, and artefact is traceable to its originating run and agent. This is what makes `--resume` possible and what makes contradictions detectable across agents.
-
----
-
-## Installation
+### 1. Clone and install
 
 ```bash
-git clone https://github.com/anvix9/basis_research_agents
+git clone https://github.com/your-username/basis_research_agents.git
 cd basis_research_agents
 pip install -r requirements.txt
-cp .env.example .env
-# Edit .env — add required keys
-python3 main.py keys      # verify configuration
-python3 main.py run --problem "Your research question here"
 ```
 
-### Required environment variables
+### 2. Set up the ConceptNet database
 
-| Variable | Required | Notes |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | Yes | For Claude Haiku/Sonnet |
-| `OPENALEX_API_KEY` | Yes | Free; required since Feb 2026 |
-| `NCBI_EMAIL` | Recommended | Courtesy identification |
-| `CORE_API_KEY` | Optional | Enables CORE retrieval |
-| `SEMANTIC_SCHOLAR_API_KEY` | Optional | Higher rate limits |
-| `GOOGLE_BOOKS_API_KEY` | Optional | Enables book-length retrieval |
-
-**Consensus does not use an API key.** On first run you'll be prompted to log in once via browser; tokens persist automatically.
-
----
-
-## Common commands
+The ConceptNet database provides semantic concept expansion. It ships compressed:
 
 ```bash
-# Full run
-python3 main.py run --problem "Your research question"
-
-# Resume a crashed or cancelled run
-python3 main.py run --problem "..." --run-id RUN-XXXXXXXX --resume
-
-# List all runs with status
-python3 main.py runs
-
-# Verify all API keys and Consensus MCP auth status
-python3 main.py keys
-
-# Passive collection (suitable for cron)
-python3 main.py collect
-
+cd db/
+gunzip conceptnet.db.gz
+cd ..
 ```
 
----
+This produces `db/conceptnet.db` (~184 MB). If you skip this step, the concept mapper will use a simpler keyword-only mode.
 
-## Licence
+### 3. Configure API keys
 
-MIT — see `LICENCE`.
+```bash
+cp .env.example .env
+```
 
-Data source licences: OpenAlex (CC0), arXiv metadata (CC0), PubMed metadata (public domain), Open Library metadata (CC0 / CC BY), PhilArchive (CC BY-SA). Consensus, Semantic Scholar, CORE, and Google Books are subject to their respective terms of service.
+Edit `.env` and add your Anthropic API key:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+**That's the only required key.** All academic sources (OpenAlex, Semantic Scholar, arXiv, CORE) are free and keyless.
+
+### 4. Run your first pipeline
+
+```bash
+python3 main.py run --problem "How does identity influence intelligence through the lens of identity theory?"
+```
+
+The pipeline will:
+1. Expand your problem into conceptual territory
+2. Stop at **Break 0** — you confirm which academic themes to search
+3. Search 10+ academic sources, build the argument tree
+4. Stop at **Break 1** — you review the foundations and gaps
+5. Generate implications, proposals, evaluations, synthesis
+6. Stop at **Break 2** — you set the trajectory and choose outputs
+7. Produce an Understanding Map, research brief, and whatever else you requested
+
+### 5. Resume a run
+
+If the pipeline is interrupted or you want to re-run from a break point:
+
+```bash
+python3 main.py run --problem "your problem" --run-id RUN-20260407-022355-242D --resume
+```
+
+The pipeline detects which agents already completed (by checking the database) and skips them.
+
+## Using Ollama (Free, Local, No API Key)
+
+SEEKER works with local models via [Ollama](https://ollama.com/) as a fallback. No cloud API needed.
+
+### Setup
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull a model (14B+ recommended for research quality)
+ollama pull qwen2.5:14b
+
+# Or a smaller model for testing
+ollama pull qwen2.5:7b
+```
+
+### Configuration
+
+Leave `ANTHROPIC_API_KEY` empty in your `.env` file. The pipeline auto-detects Ollama on `localhost:11434` and uses it for all agents.
+
+```
+# .env — leave blank for Ollama-only mode
+ANTHROPIC_API_KEY=
+```
+
+### What to expect
+
+Local models (7B–14B) produce usable results but with lower quality than Claude:
+- Sub-question decomposition may be shallower
+- JSON parsing failures are more frequent (the pipeline has fallback parsers)
+- Synthesis quality depends heavily on model size
+- 14B+ is recommended; 7B works but produces thin outputs
+
+The pipeline is designed to degrade gracefully — every JSON parser has a fallback, every agent has error handling, and the argument tree preserves whatever was successfully parsed.
+
+## Configuration
+
+### `config.json`
+
+Controls which academic themes are available, their search keywords, and which sources each agent uses:
+
+```json
+{
+  "agent_sources": {
+    "social":   ["openalex", "arxiv", "pubmed", "semantic_scholar", "core"],
+    "grounder": ["openalex", "semantic_scholar"]
+  }
+}
+```
+
+Add or remove sources per agent without touching code.
+
+### `concept_map.json`
+
+37 semantic concept clusters that translate natural language research problems into academic themes. If SEEKER doesn't recognize your field, add a cluster here (see CONTRIBUTING.md).
+
+## Evaluation Tools
+
+```bash
+# Check if references are real (Semantic Scholar + OpenAlex + Claude web search)
+python3 tools/eval_references.py --run-id RUN-... --types seminal --limit 10
+
+# Check if claims about references are accurate
+python3 tools/eval_claims.py --run-id RUN-... --types seminal --limit 10
+
+# Generate a formatted reference section (APA/Chicago)
+python3 tools/generate_references.py --run-id RUN-... --format apa
+```
+
+## Academic Sources
+
+SEEKER searches 10+ live academic sources. No source uses model training data.
+
+| Source | Key Required | Coverage |
+|--------|-------------|----------|
+| OpenAlex | No (email for faster access) | 250M+ works, full metadata |
+| Semantic Scholar | No (key for higher limits) | 200M+ papers, citation graphs |
+| arXiv | No | Preprints (CS, physics, math, etc.) |
+| PubMed/NCBI | No | Biomedical literature |
+| CORE | No | 200M+ open access papers |
+| PhilPapers | No | Philosophy-specific |
+| PhilArchive | No | Open philosophy preprints |
+| PhilSci Archive | No | Philosophy of science |
+| Scopus | API key (institutional) | Elsevier's comprehensive index |
+| Consensus | MCP OAuth (Pro plan) | Semantic search, 200M+ papers |
+
+## Project Structure
+
+```
+basis_research_agents/
+├── main.py              # Pipeline runner and CLI
+├── config.json          # Themes, sources, agent configuration
+├── concept_map.json     # 37 semantic concept clusters
+│
+├── agents/              # The 10 pipeline agents
+│   ├── grounder.py      # Problem decomposition + argument tree building
+│   ├── social.py        # Contemporary + bridge paper discovery
+│   ├── historian.py     # Tree audit + historical context + external factors
+│   ├── gaper.py         # Tree-native structural + analytical gap mapping
+│   ├── vision.py        # Logical implications extraction
+│   ├── theorist.py      # Research proposal generation (two-pass)
+│   ├── rude.py          # Adversarial feasibility evaluation
+│   ├── synthesizer.py   # Research narrative synthesis
+│   ├── thinker.py       # New direction exploration
+│   └── scribe.py        # Understanding Map + output generation
+│
+├── core/                # Infrastructure
+│   ├── argument_tree.py # Persistent argument tree (TreeBuilder class)
+│   ├── llm.py           # LLM router (Claude primary, Ollama fallback)
+│   ├── database.py      # SQLite schema (12 tables)
+│   ├── context.py       # Context assembly with tree injection
+│   ├── concept_mapper.py# Problem → theme activation (130 disciplines)
+│   ├── breaks.py        # Human-in-the-loop break points
+│   ├── references.py    # Reference formatting for Scribe
+│   ├── consensus_mcp.py # Consensus OAuth 2.1 MCP client
+│   ├── rate_limiter.py  # Per-source API rate limiting
+│   ├── keys.py          # Environment variable management
+│   └── utils.py         # Shared utilities
+│
+├── tools/               # Evaluation and export tools
+│   ├── eval_references.py    # Reference existence verification
+│   ├── eval_claims.py        # Claim accuracy verification
+│   ├── generate_references.py# APA/Chicago reference section generator
+│   ├── export_seminal.py     # Seminal works → Jekyll blog export
+│   └── import_conceptnet.py  # Build ConceptNet DB from CSV dump
+│
+├── tests/               # Unit tests
+│   ├── test_grounder_tree.py # Argument tree building
+│   ├── test_social_bridge.py # Bridge gap detection
+│   ├── test_historian_tree.py# Tree audit + extension
+│   ├── test_context_tree.py  # Tree context injection
+│   ├── test_gaper_tree.py    # Tree-native gap mapping
+│   └── test_references.py    # Reference section generation
+│
+├── db/                  # Databases
+│   ├── conceptnet.db.gz # ConceptNet (compressed — gunzip before first run)
+│   ├── pipeline.db      # Created automatically on first run
+│   └── consensus_tokens.json  # OAuth tokens (auto-managed)
+│
+├── artifacts/           # Pipeline outputs (per run)
+├── logs/                # Run logs
+├── .env.example         # API key template
+├── CONTRIBUTING.md      # Contribution guide
+├── LICENSE              # MIT
+└── requirements.txt     # Python dependencies
+```
+
+## The Argument Tree
+
+The argument tree is the single source of truth for the entire pipeline. Every agent reads and extends it.
+
+```
+ROOT: "How does identity influence intelligence?"
+├── Q1: What is identity?
+│   ├── CLAIM [solid] (90%): Identity is socially constructed
+│   │   ├── EVIDENCE [book]: Mead 1934 — Mind, Self, and Society
+│   │   ├── EVIDENCE [paper]: Tajfel 1979 — Social identity
+│   │   └── COUNTER: Essentialists argue biological basis
+│   └── BRIDGE [temporal]: Stryker 1980 connects 1934→1995
+├── Q2: What is intelligence?
+│   └── CLAIM [weak] (40%): Intelligence is g-factor — single evidence
+├── Q3: How are they related? [UNANSWERED — structural gap]
+├── HISTORICAL: Locke 1690 — personal identity tied to memory
+├── EXTERNAL [war]: WWII disrupted European psychology departments
+└── AUDIT: Tree health — 2 solid, 1 weak, 1 unanswered
+```
+
+Node types: `root`, `question`, `claim`, `evidence`, `bridge`, `counter`, `historical`, `external`, `audit_note`
+
+Evidence types: `paper`, `book`, `report`, `legal_document`, `court_decision`, `news_article`, `archival`, `testimony`, `resolution`, `dataset`
+
+## Tests
+
+```bash
+# Run all tests
+python3 -m pytest tests/ -v
+
+# Run individually
+python3 tests/test_grounder_tree.py
+python3 tests/test_social_bridge.py
+python3 tests/test_historian_tree.py
+python3 tests/test_context_tree.py
+python3 tests/test_gaper_tree.py
+python3 tests/test_references.py
+```
+
+## CLI Reference
+
+```bash
+# Full pipeline run
+python3 main.py run --problem "Your research question"
+
+# Resume from where you left off
+python3 main.py run --problem "..." --run-id RUN-XXXXXXXX --resume
+
+# Test a single source handler
+python3 main.py test --source openalex --query "neural networks"
+
+# Passive collection (Social only, no pipeline)
+python3 main.py collect
+
+# Check run status
+python3 main.py status --run-id RUN-XXXXXXXX
+
+# View seminal bank proposals
+python3 main.py bank
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+## Acknowledgments
+
+Thanks to Academic data from OpenAlex, Semantic Scholar, arXiv, PubMed, CORE, PhilPapers, and Consensus, and Claude (Anthropic), Ollama local model fallback. 

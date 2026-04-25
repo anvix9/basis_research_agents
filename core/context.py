@@ -113,13 +113,32 @@ def for_gaper(run_id: str, problem: str, break1_instructions: str = None) -> str
     return ctx
 
 
+def _tree_context(run_id: str, max_depth: int = 3, include_evidence: bool = True) -> str:
+    """Get argument tree context if tree exists for this run."""
+    try:
+        from core.argument_tree import TreeBuilder
+        tree = TreeBuilder(run_id)
+        stats = tree.get_stats()
+        if stats.get("total_nodes", 0) == 0:
+            tree.close()
+            return ""
+        ctx = tree.to_context(max_depth=max_depth, include_evidence=include_evidence)
+        tree.close()
+        return ctx
+    except Exception:
+        return ""
+
+
 def for_vision(run_id: str, problem: str, break1_instructions: str = None) -> str:
-    """Context for Vision — all prior outputs + Break 1 instructions."""
+    """Context for Vision — tree + gaps + social + Break 1."""
     seminal    = db.get_sources_by_type("seminal",    run_id)
     historical = db.get_sources_by_type("historical", run_id)
     social     = db.get_sources_by_type("current",    run_id)
     gaps       = db.get_gaps(run_id)
     ctx  = f"PROBLEM:\n{problem}"
+    tree_ctx = _tree_context(run_id, max_depth=3)
+    if tree_ctx:
+        ctx += _fmt("Argument Tree (structured claims + evidence)", tree_ctx)
     ctx += _fmt("Seminal Works (Grounder)", _sources_summary(seminal))
     ctx += _fmt("Historical Map (Historian)", _sources_summary(historical))
     ctx += _fmt("Gap Map (Gaper)", _gaps_summary(gaps))
@@ -130,13 +149,16 @@ def for_vision(run_id: str, problem: str, break1_instructions: str = None) -> st
 
 
 def for_theorist(run_id: str, problem: str, break1_instructions: str = None) -> str:
-    """Context for Theorist — all prior outputs."""
+    """Context for Theorist — tree + all prior outputs."""
     seminal     = db.get_sources_by_type("seminal",    run_id)
     historical  = db.get_sources_by_type("historical", run_id)
     social      = db.get_sources_by_type("current",    run_id)
     gaps        = db.get_gaps(run_id)
     implications = db.get_implications(run_id)
     ctx  = f"PROBLEM:\n{problem}"
+    tree_ctx = _tree_context(run_id, max_depth=3)
+    if tree_ctx:
+        ctx += _fmt("Argument Tree", tree_ctx)
     ctx += _fmt("Seminal Works (Grounder)", _sources_summary(seminal))
     ctx += _fmt("Historical Map (Historian)", _sources_summary(historical))
     ctx += _fmt("Gap Map (Gaper)", _gaps_summary(gaps))
@@ -148,12 +170,15 @@ def for_theorist(run_id: str, problem: str, break1_instructions: str = None) -> 
 
 
 def for_rude(run_id: str, problem: str, break1_instructions: str = None) -> str:
-    """Context for Rude — proposals + historical dead ends + social."""
+    """Context for Rude — tree + proposals + dead ends + social."""
     historical = db.get_sources_by_type("historical", run_id)
     social     = db.get_sources_by_type("current",    run_id)
     proposals  = db.get_proposals(run_id)
     gaps       = db.get_gaps(run_id)
     ctx  = f"PROBLEM:\n{problem}"
+    tree_ctx = _tree_context(run_id, max_depth=2, include_evidence=False)
+    if tree_ctx:
+        ctx += _fmt("Argument Tree (claims only — check proposals against this)", tree_ctx)
     ctx += _fmt("Proposals (Theorist)", _proposals_summary(proposals))
     ctx += _fmt("Historical Dead Ends (Historian)", _sources_summary(
         [s for s in historical if s.get("phase_tag") == "dead_end"]
@@ -166,7 +191,7 @@ def for_rude(run_id: str, problem: str, break1_instructions: str = None) -> str:
 
 
 def for_synthesizer(run_id: str, problem: str, break1_instructions: str = None) -> str:
-    """Context for Synthesizer — everything."""
+    """Context for Synthesizer — tree + everything."""
     seminal     = db.get_sources_by_type("seminal",    run_id)
     historical  = db.get_sources_by_type("historical", run_id)
     social      = db.get_sources_by_type("current",    run_id)
@@ -175,6 +200,9 @@ def for_synthesizer(run_id: str, problem: str, break1_instructions: str = None) 
     proposals   = db.get_proposals(run_id)
     evaluations = db.get_evaluations(run_id)
     ctx  = f"PROBLEM:\n{problem}"
+    tree_ctx = _tree_context(run_id, max_depth=4)
+    if tree_ctx:
+        ctx += _fmt("Argument Tree (full — build narrative from this structure)", tree_ctx)
     ctx += _fmt("Seminal Works (Grounder)", _sources_summary(seminal))
     ctx += _fmt("Historical Map (Historian)", _sources_summary(historical))
     ctx += _fmt("Current Intelligence (Social)", _sources_summary(social))
@@ -188,13 +216,16 @@ def for_synthesizer(run_id: str, problem: str, break1_instructions: str = None) 
 
 
 def for_thinker(run_id: str, problem: str, break2_instructions: str = None) -> str:
-    """Context for Thinker — synthesis + full pipeline."""
+    """Context for Thinker — tree + synthesis + pipeline."""
     synthesis   = db.get_synthesis(run_id)
     gaps        = db.get_gaps(run_id)
     implications = db.get_implications(run_id)
     proposals   = db.get_proposals(run_id, status="feasible")
     evaluations = db.get_evaluations(run_id)
     ctx  = f"PROBLEM:\n{problem}"
+    tree_ctx = _tree_context(run_id, max_depth=2, include_evidence=False)
+    if tree_ctx:
+        ctx += _fmt("Argument Tree (claims structure)", tree_ctx)
     if synthesis:
         ctx += _fmt("Research Narrative (Synthesizer)", synthesis.get("full_narrative", ""))
         ctx += _fmt("Trajectory Statement", synthesis.get("trajectory_statement", ""))
@@ -224,6 +255,11 @@ def for_understanding_map(run_id: str, problem: str) -> str:
 
     ctx  = f"PROBLEM:\n{problem}\n"
     ctx += f"\nOUTPUT TYPE: understanding_map\n"
+
+    # Argument tree — the intellectual backbone
+    tree_ctx = _tree_context(run_id, max_depth=4, include_evidence=True)
+    if tree_ctx:
+        ctx += f"\n=== ARGUMENT TREE (full structure for reading curriculum) ===\n{tree_ctx}\n"
 
     # Seminal works — the core of the reading curriculum
     if seminal:

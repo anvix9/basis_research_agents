@@ -1,7 +1,20 @@
 [project]
-name = "pipeline"
-version = "0.1.0"
-description = "Add your description here"
+name = "aranea"
+version = "10.4.0"
+description = "Multi-agent deep research intelligence pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+license = {text = "MIT"}
+
+dependencies = [
+    "anthropic>=0.40.0",
+    "requests>=2.31.0",
+    "arxiv>=2.1.0",
+]
+
+[project.optional-dependencies]
+consensus = ["mcp>=1.20.0"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+aranea = "main:main"

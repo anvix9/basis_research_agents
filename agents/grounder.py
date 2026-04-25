@@ -424,6 +424,12 @@ def run(context: str, run_id: str, **kwargs):
     def _src_on(name: str) -> bool:
         return name in _allowed
 
+    # Initialize argument tree
+    from core.argument_tree import TreeBuilder
+    tree = TreeBuilder(run_id)
+    root_id = tree.create_root(problem)
+    print(f"  [Grounder] Tree root created: {root_id}")
+
     # -----------------------------------------------------------------------
     # Step 1 — Decompose problem into sub-questions
     # -----------------------------------------------------------------------
@@ -445,31 +451,42 @@ def run(context: str, run_id: str, **kwargs):
 
     sub_questions = decomp_data.get("sub_questions", [])
     print(f"  [Grounder] {len(sub_questions)} sub-questions generated")
+
+    # Add sub-questions as tree nodes
+    q_node_map: dict[str, str] = {}  # maps Q1, Q2... → tree node_id
     for sq in sub_questions:
-        print(f"    {sq.get('id','?')} [{sq.get('level','')}] {sq.get('question','')}")
+        q_id = sq.get("id", "?")
+        node_id = tree.add_question(
+            root_id, sq.get("question", ""),
+            question_level=sq.get("level", "foundational"),
+            agent="grounder",
+        )
+        q_node_map[q_id] = node_id
+        print(f"    {q_id} [{sq.get('level','')}] {sq.get('question','')[:60]}")
 
     # -----------------------------------------------------------------------
     # Step 2 — Generate queries per sub-question and search all sources
+    #          For each result, save to DB AND add to tree
     # -----------------------------------------------------------------------
     all_sources: list[dict] = []
-    source_texts: list[str] = []  # for synthesis prompt
+    source_texts: list[str] = []
 
     for sq in sub_questions:
         q_text = sq.get("question", "")
         q_id   = sq.get("id", "?")
+        q_node = q_node_map.get(q_id, root_id)
         print(f"  [Grounder] Querying sources for {q_id}: {q_text[:60]}...")
 
         # Generate contextual queries
         try:
             qgen_resp = llm.call(
                 f"Sub-question: {q_text}\nProblem context: {problem}",
-                QUERY_GEN_SYSTEM, agent_name="social"  # uses cheaper model
+                QUERY_GEN_SYSTEM, agent_name="social"
             )
             qgen_clean = re.sub(r"```(?:json)?|```", "", qgen_resp).strip()
             queries    = json.loads(qgen_clean)
         except Exception as e:
             logger.warning(f"[Grounder] Query gen failed for {q_id}: {e}")
-            # Fallback: build simple contextual query from question words
             words = [w for w in q_text.lower().split()
                      if len(w) > 4 and w not in {"what","does","have","that","this","with","from","into"}]
             queries = {
@@ -484,69 +501,89 @@ def run(context: str, run_id: str, **kwargs):
 
         print(f"    Papers: '{paper_query}' | Books: '{book_query}' | Web: '{web_query}'")
 
+        def _process_results(results: list[dict], source_label: str,
+                             evidence_type: str = "paper"):
+            """Save each result to all_sources and build tree nodes."""
+            for r in results:
+                all_sources.append(r)
+                title = r.get('title', '')
+                authors = r.get('authors', [])
+                year = r.get('year', '?')
+                abstract = r.get('abstract', '')[:300]
+                author_str = ', '.join(authors[:2])
+
+                source_texts.append(
+                    f"[{q_id}/{source_label}] {title} ({year}) "
+                    f"— {author_str} | {abstract}"
+                )
+
+                # Generate a temporary source_id for tree linkage
+                # (will be replaced with real DB source_id after synthesis)
+                temp_src_id = generate_id("TSRC")
+                r['_temp_src_id'] = temp_src_id
+                r['_question_id'] = q_id
+                r['_evidence_type'] = evidence_type
+
+                # Add claim + evidence to tree under this question
+                claim_text = (
+                    f"{title} ({author_str}, {year}): "
+                    f"{abstract[:150]}"
+                )
+                claim_id = tree.add_claim(
+                    q_node, claim_text,
+                    confidence=0.5,  # initial — refined in synthesis
+                    source_ids=[temp_src_id],
+                    agent="grounder",
+                )
+                tree.add_evidence(
+                    claim_id, temp_src_id,
+                    evidence_type=evidence_type,
+                    relationship="supports",
+                    snippet=abstract[:300],
+                    agent="grounder",
+                    metadata={
+                        "title": title,
+                        "authors": authors[:3],
+                        "year": year,
+                        "source_name": r.get('source_name', source_label.lower()),
+                    },
+                )
+
         # Academic papers — OpenAlex
         if paper_query and _src_on("openalex"):
             results = _search_openalex(paper_query, limit=4)
             time.sleep(0.2)
-            all_sources.extend(results)
-            for r in results:
-                source_texts.append(
-                    f"[{q_id}/OpenAlex] {r['title']} ({r.get('year','?')}) "
-                    f"— {', '.join(r['authors'][:2])} | {r['abstract'][:300]}"
-                )
+            _process_results(results, "OpenAlex", "paper")
 
         # Academic papers — Semantic Scholar
         if paper_query and _src_on("semantic_scholar"):
             results = _search_semantic_scholar(paper_query, limit=3)
-            all_sources.extend(results)
-            for r in results:
-                source_texts.append(
-                    f"[{q_id}/S2] {r['title']} ({r.get('year','?')}) "
-                    f"— {', '.join(r['authors'][:2])} | {r['abstract'][:300]}"
-                )
+            _process_results(results, "S2", "paper")
 
-        # Academic papers — Consensus (semantic search, finds conceptual matches)
+        # Academic papers — Consensus
         if paper_query and _src_on("consensus"):
             results = _search_consensus(paper_query)
-            all_sources.extend(results)
-            for r in results:
-                cited = f" | cited: {r['cited_by']}" if r.get("cited_by") else ""
-                source_texts.append(
-                    f"[{q_id}/Consensus] {r['title']} ({r.get('year','?')}) "
-                    f"— {', '.join(r['authors'][:2])}{cited} | {r['abstract'][:300]}"
-                )
+            _process_results(results, "Consensus", "paper")
 
         # Books — Google Books
         if book_query and _src_on("google_books"):
             results = _search_google_books(book_query, limit=3)
             time.sleep(0.5)
-            all_sources.extend(results)
-            for r in results:
-                source_texts.append(
-                    f"[{q_id}/GoogleBooks] BOOK: {r['title']} ({r.get('year','?')}) "
-                    f"— {', '.join(r['authors'][:2])} | {r['abstract'][:300]}"
-                )
+            _process_results(results, "GoogleBooks", "book")
 
         # Books — Open Library
         if book_query and _src_on("open_library"):
             results = _search_open_library(book_query, limit=3)
-            all_sources.extend(results)
-            for r in results:
-                source_texts.append(
-                    f"[{q_id}/OpenLibrary] BOOK: {r['title']} ({r.get('year','?')}) "
-                    f"— {', '.join(r['authors'][:2])}"
-                )
+            _process_results(results, "OpenLibrary", "book")
 
         # Web search — broader coverage
         if web_query and _src_on("web"):
             results = _search_web(web_query)
-            all_sources.extend(results)
-            for r in results:
-                source_texts.append(
-                    f"[{q_id}/WebSearch] {r['abstract'][:500]}"
-                )
+            _process_results(results, "WebSearch", "other")
 
     print(f"  [Grounder] {len(all_sources)} total sources gathered across {len(sub_questions)} sub-questions")
+    tree_stats = tree.get_stats()
+    print(f"  [Grounder] Tree: {tree_stats['total_nodes']} nodes, {tree_stats['unique_sources']} sources")
 
     # -----------------------------------------------------------------------
     # Step 3 — LLM synthesis from all gathered material
@@ -582,7 +619,6 @@ For each seminal work, use the exact title and author from the sources above whe
         clean = re.sub(r"```(?:json)?|```", "", response).strip()
         data  = json.loads(clean)
     except json.JSONDecodeError:
-        # Try to extract JSON block
         start = clean.find("{")
         end   = clean.rfind("}")
         if start != -1 and end > start:
@@ -603,15 +639,16 @@ For each seminal work, use the exact title and author from the sources above whe
             }
 
     # -----------------------------------------------------------------------
-    # Step 4 — Save seminal works to database
+    # Step 4 — Save seminal works to database + update tree with real source_ids
     # -----------------------------------------------------------------------
     saved = 0
     for work in data.get("seminal_works", []):
         if not work.get("title"):
             continue
         link_status = _verify_link(work.get("active_link", ""))
+        source_id = generate_id("SEM")
         ok = db.upsert_source({
-            "source_id":         generate_id("SEM"),
+            "source_id":         source_id,
             "title":             work.get("title", ""),
             "authors":           work.get("authors", []),
             "year":              work.get("year"),
@@ -651,11 +688,17 @@ For each seminal work, use the exact title and author from the sources above whe
     # -----------------------------------------------------------------------
     _save_doc(run_id, problem, data, sub_questions, decomp_data.get("decomposition_logic",""))
 
+    # Print tree summary
+    final_stats = tree.get_stats()
+    gaps = tree.find_gaps()
     n_books  = sum(1 for s in data.get("seminal_works",[]) if s.get("material_type") == "book")
     n_papers = sum(1 for s in data.get("seminal_works",[]) if s.get("material_type") != "book")
     print(f"  [Grounder] {saved} seminal works saved ({n_papers} papers, {n_books} books) | "
           f"{len(data.get('themes_extracted',[]))} themes | "
           f"{len(data.get('proposed_new_themes',[]))} proposals to seminal bank")
+    print(f"  [Grounder] Tree: {final_stats['total_nodes']} nodes | "
+          f"{len(gaps)} gaps (unanswered questions / unsupported claims)")
+    tree.close()
     logger.info("[Grounder] Complete")
 
 
