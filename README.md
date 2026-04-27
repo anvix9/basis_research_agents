@@ -47,7 +47,7 @@ Concept Mapper → Break 0 (you confirm themes)
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/your-username/basis_research_agents.git
+git clone https://github.com/anvix9/basis_research_agents.git
 cd basis_research_agents
 pip install -r requirements.txt
 ```
