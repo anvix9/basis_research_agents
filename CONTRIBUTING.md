@@ -1,6 +1,6 @@
-# Contributing to ARANEA
+# Contributing to SEEKER
 
-Thank you for your interest in contributing. ARANEA is an open research tool and welcomes contributions from researchers, developers, and anyone interested in improving academic research workflows.
+Thank you for your interest in contributing. SEEKER is an open research tool and welcomes contributions from researchers, developers, and anyone interested in improving academic research workflows.
 
 ## Getting Started
 
@@ -14,7 +14,7 @@ Thank you for your interest in contributing. ARANEA is an open research tool and
 ## Project Structure
 
 ```
-aranea/
+basis_research_agents/
 ├── main.py              # Pipeline runner and CLI
 ├── config.json           # Themes, sources, agent_sources configuration
 ├── concept_map.json      # Semantic concept clusters (37 clusters)
@@ -68,7 +68,7 @@ Add your handler to `SOURCE_HANDLERS` dict and add the source to `config.json` t
 
 ### New Concept Map Clusters
 
-If ARANEA doesn't recognize your research domain, add a cluster to `concept_map.json`:
+If SEEKER doesn't recognize your research domain, add a cluster to `concept_map.json`:
 
 ```json
 {
