@@ -12,13 +12,13 @@
       "code"
     ],
     "client_name": "SEEKER Research Pipeline",
-    "client_id": "64ea9d58-3e21-44cd-a3fe-e816dee07fcb"
+    "client_id": "64e05658-44cd-a3fe-e816dee07kl"
   },
   "tokens": {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2NvbnNlbnN1cy5hcHAiLCJzdWIiOiJ1c2VyXzM4ZDdXZHRsTjQ1NWZSdEo0Y2dhY2xQeHpIaiIsImF1ZCI6Imh0dHBzOi8vbWNwLmNvbnNlbnN1cy5hcHAiLCJzY29wZSI6InNlYXJjaCIsInRpZXIiOiJwcm8iLCJpYXQiOjE3NzY5NjU5NTYsImV4cCI6MTc3Njk4MDM1NiwianRpIjoiYTA5OWQxMjUtYjJiNi00OTM2LTlmYzUtMTRlNDczMWY5ZDRiIn0.OtMMfvdSwATBCnkdY29cHfKQdcdopXn3JasHQBXGxfg",
     "token_type": "Bearer",
     "expires_in": 14400,
     "scope": "search",
-    "refresh_token": "HO_jjEqyZfhZ5LiZeqVNkdwjjZqZOrVjfNkKJxwwdxyGH6CE7jk3OwRekugLZMtz"
+    "refresh_token": "wwdxyGH6CE7jk3OwRekugLZMtz"
   }
 }
